@@ -260,12 +260,17 @@ export default function DashboardPage({ user }) {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Margin Trend */}
-          {kpis && kpis.series && kpis.series.margin_trend && (
-            <div className="kpi-card p-6" data-testid="margin-trend-chart">
-              <h3 className="text-lg font-heading font-semibold mb-4">Margin Trend</h3>
+          {/* Role-specific Trend Chart */}
+          {kpis && kpis.series && kpis.series.trends && (
+            <div className="kpi-card p-6" data-testid="trend-chart">
+              <h3 className="text-lg font-heading font-semibold mb-4">
+                {role === 'CXO' && 'EBITDA & Margin Trend'}
+                {role === 'Plant Head' && 'Capacity & Downtime Trend'}
+                {role === 'Energy Manager' && 'Power & AFR Trend'}
+                {role === 'Sales' && 'Realization & OTIF Trend'}
+              </h3>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={kpis.series.margin_trend}>
+                <LineChart data={kpis.series.trends}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis 
                     dataKey="date" 
@@ -284,13 +289,31 @@ export default function DashboardPage({ user }) {
                       color: '#fff'
                     }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#0E7490" 
-                    strokeWidth={2}
-                    dot={{ fill: '#0E7490', r: 3 }}
-                  />
+                  <Legend />
+                  {role === 'CXO' && (
+                    <>
+                      <Line type="monotone" dataKey="ebitda" stroke="#0E7490" strokeWidth={2} name="EBITDA" />
+                      <Line type="monotone" dataKey="margin" stroke="#F97316" strokeWidth={2} name="Margin %" />
+                    </>
+                  )}
+                  {role === 'Plant Head' && (
+                    <>
+                      <Line type="monotone" dataKey="capacity" stroke="#0E7490" strokeWidth={2} name="Capacity %" />
+                      <Line type="monotone" dataKey="downtime" stroke="#F97316" strokeWidth={2} name="Downtime hrs" />
+                    </>
+                  )}
+                  {role === 'Energy Manager' && (
+                    <>
+                      <Line type="monotone" dataKey="power" stroke="#0E7490" strokeWidth={2} name="Power kWh/T" />
+                      <Line type="monotone" dataKey="afr" stroke="#F97316" strokeWidth={2} name="AFR %" />
+                    </>
+                  )}
+                  {role === 'Sales' && (
+                    <>
+                      <Line type="monotone" dataKey="realization" stroke="#0E7490" strokeWidth={2} name="Realization" />
+                      <Line type="monotone" dataKey="otif" stroke="#F97316" strokeWidth={2} name="OTIF %" />
+                    </>
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             </div>
