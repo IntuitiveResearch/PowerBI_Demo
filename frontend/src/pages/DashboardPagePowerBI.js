@@ -644,6 +644,17 @@ export default function DashboardPagePowerBI({ user }) {
             </Button>
 
             <Button
+              data-testid="email-report-button"
+              onClick={() => setShowEmailModal(true)}
+              size="sm"
+              variant="outline"
+              className="border-green-500 text-green-600 hover:bg-green-50"
+            >
+              <Mail className="w-4 h-4 mr-1" />
+              Send Report
+            </Button>
+
+            <Button
               data-testid="ai-chat-button"
               onClick={() => setShowAIChat(true)}
               size="sm"
