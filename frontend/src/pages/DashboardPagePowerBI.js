@@ -280,7 +280,15 @@ export default function DashboardPagePowerBI({ user }) {
                       name={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     />
                   ))}
-                  <Brush dataKey="date" height={30} stroke="#0EA5E9" />
+                  <Brush 
+                    dataKey="date" 
+                    height={30} 
+                    stroke="#0EA5E9"
+                    fill="#E0F2FE"
+                    onChange={handleBrushChange}
+                    startIndex={zoomDomain.startIndex}
+                    endIndex={zoomDomain.endIndex}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
