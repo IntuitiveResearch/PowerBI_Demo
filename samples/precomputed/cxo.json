@@ -1,0 +1,25 @@
+{
+  "reportType": "CXO",
+  "kpis": {
+    "totalCement": 125340,
+    "avgEBITDA": 1120,
+    "avgPower": 72.3,
+    "avgMargin": 22.5
+  },
+  "charts": {
+    "marginTrend": [
+      {"month": "2024-01", "value": 21.5},
+      {"month": "2024-02", "value": 22.1},
+      {"month": "2024-03", "value": 22.8},
+      {"month": "2024-04", "value": 21.9},
+      {"month": "2024-05", "value": 23.2}
+    ],
+    "plantComparison": [
+      {"plant": "Lumshnong", "ebitda": 1180},
+      {"plant": "Sonapur", "ebitda": 1150},
+      {"plant": "Siliguri", "ebitda": 1100},
+      {"plant": "Jalpaiguri", "ebitda": 1090},
+      {"plant": "Guwahati", "ebitda": 1080}
+    ]
+  }
+}
