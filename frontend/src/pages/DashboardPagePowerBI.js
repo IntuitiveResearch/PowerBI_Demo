@@ -234,9 +234,17 @@ export default function DashboardPagePowerBI({ user }) {
           {/* Trend Chart with Zoom */}
           {kpis && kpis.series && kpis.series.trends && (
             <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg" data-testid="trend-chart">
-              <h3 className="text-lg font-heading font-semibold mb-4 text-gray-800">
-                Performance Trend (with Zoom)
-              </h3>
+              <div className="mb-4">
+                <h3 className="text-lg font-heading font-semibold text-gray-800">
+                  Performance Trend (Drag Brush to Zoom)
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {role === 'CXO' && 'Track EBITDA and margin trends over time to identify profitability patterns'}
+                  {role === 'Plant Head' && 'Monitor capacity utilization and downtime to optimize production efficiency'}
+                  {role === 'Energy Manager' && 'Analyze power consumption and AFR% to identify cost-saving opportunities'}
+                  {role === 'Sales' && 'Track realization and OTIF% to measure market performance and service quality'}
+                </p>
+              </div>
               <ResponsiveContainer width="100%" height={350}>
                 <AreaChart data={kpis.series.trends}>
                   <defs>
@@ -252,7 +260,7 @@ export default function DashboardPagePowerBI({ user }) {
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                   <XAxis dataKey="date" stroke="#6B7280" style={{ fontSize: '12px' }} />
                   <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip role={role} />} />
                   <Legend />
                   {Object.keys(kpis.series.trends[0] || {}).filter(k => k !== 'date').slice(0, 2).map((key, index) => (
                     <Area
@@ -262,6 +270,7 @@ export default function DashboardPagePowerBI({ user }) {
                       stroke={index === 0 ? '#0EA5E9' : '#F59E0B'}
                       fill={index === 0 ? 'url(#colorPrimary)' : 'url(#colorSecondary)'}
                       strokeWidth={3}
+                      name={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     />
                   ))}
                   <Brush dataKey="date" height={30} stroke="#0EA5E9" />
