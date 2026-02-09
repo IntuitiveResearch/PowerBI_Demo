@@ -127,24 +127,35 @@ export default function AdminPage({ user }) {
           </div>
         </div>
 
-        {/* Power BI Setup */}
-        <div className="kpi-card bg-info/5 border-info/20">
+        {/* Offline Mode Info */}
+        <div className="kpi-card bg-muted/50">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-info flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-lg font-heading font-semibold mb-2">Power BI Setup</h3>
+              <h3 className="text-lg font-heading font-semibold mb-2">About Offline Mode</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                To enable online Power BI embedding, configure the following environment variables in <code className="bg-muted px-1 rounded">/app/backend/.env</code>:
+                This platform is configured to work entirely offline using:
               </p>
-              <ul className="text-sm space-y-1 font-mono text-xs">
-                <li>POWERBI_TENANT_ID</li>
-                <li>POWERBI_CLIENT_ID</li>
-                <li>POWERBI_CLIENT_SECRET</li>
-                <li>POWERBI_WORKSPACE_ID</li>
-                <li>POWERBI_REPORT_CXO_ID</li>
+              <ul className="text-sm space-y-2 mb-3">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span><strong>Recharts</strong> for all data visualizations (charts, graphs, KPI cards)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span><strong>DuckDB</strong> for analytical queries on uploaded data</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span><strong>Precomputed JSON</strong> files in <code className="bg-muted px-1 rounded text-xs">/samples/precomputed/</code> for demo reports</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span><strong>OpenAI GPT-4o</strong> via Emergent LLM key for AI insights (internet required only for AI)</span>
+                </li>
               </ul>
-              <p className="text-sm text-muted-foreground mt-3">
-                See <code className="bg-muted px-1 rounded">docs/powerbi-setup.md</code> for detailed instructions.
+              <p className="text-sm text-muted-foreground">
+                <strong>Note:</strong> Power BI embedding is not enabled. All dashboards use native React visualizations. For Power BI integration, see <code className="bg-muted px-1 rounded text-xs">/app/docs/powerbi-setup.md</code>.
               </p>
             </div>
           </div>
