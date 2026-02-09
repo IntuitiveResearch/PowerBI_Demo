@@ -725,6 +725,14 @@ export default function DashboardPagePowerBI({ user }) {
           onClose={() => setShowComparisonModal(false)}
         />
       )}
+
+      {/* Email Report Modal */}
+      <EmailReportModal
+        open={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        role={role}
+        plant={plant}
+      />
     </div>
   );
 }
