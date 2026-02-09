@@ -74,13 +74,13 @@ export default function LoginPage({ setUser }) {
         <div className="w-full max-w-md">
           {/* Logo and Title */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-sm mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg mb-4 shadow-lg">
               <Building2 className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-2">
               Star Cement
             </h1>
-            <p className="text-lg text-slate-300">KPI Analytics Platform</p>
+            <p className="text-lg text-slate-300">AI Powered KPI Dashboard</p>
           </div>
 
           {/* Login Card */}
