@@ -395,16 +395,25 @@ async def get_kpis(
             }
         elif role == "Plant Head":
             response['kpis'] = {
+                # Production KPIs
                 'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
                 'avg_daily_cement': round(kpis_result.get('avg_daily_cement', 0) or 0, 2),
+                'total_clinker_mt': round(kpis_result.get('total_clinker_mt', 0) or 0, 2),
+                # Efficiency KPIs
                 'avg_capacity_util': round(kpis_result.get('avg_capacity_util', 0) or 0, 2),
                 'avg_downtime_hrs': round(kpis_result.get('avg_downtime_hrs', 0) or 0, 2),
+                # Quality KPIs
                 'avg_blaine': round(kpis_result.get('avg_blaine', 0) or 0, 2),
                 'avg_strength_28d': round(kpis_result.get('avg_strength_28d', 0) or 0, 2),
                 'avg_clinker_factor': round(kpis_result.get('avg_clinker_factor', 0) or 0, 3),
+                # Maintenance KPIs
                 'avg_breakdown_hrs': round(kpis_result.get('avg_breakdown_hrs', 0) or 0, 2),
                 'avg_mtbf_hrs': round(kpis_result.get('avg_mtbf_hrs', 0) or 0, 2),
-                'avg_mttr_hrs': round(kpis_result.get('avg_mttr_hrs', 0) or 0, 2)
+                'avg_mttr_hrs': round(kpis_result.get('avg_mttr_hrs', 0) or 0, 2),
+                # Calculated KPIs
+                'uptime_pct': round(100 - ((kpis_result.get('avg_downtime_hrs', 0) or 0) / 24 * 100), 2),
+                'daily_clinker': round((kpis_result.get('avg_daily_cement', 0) or 0) * (kpis_result.get('avg_clinker_factor', 0) or 0), 2),
+                'production_days': round((kpis_result.get('total_cement_mt', 0) or 0) / (kpis_result.get('avg_daily_cement', 0) or 1), 0)
             }
         elif role == "Energy Manager":
             response['kpis'] = {
