@@ -737,6 +737,253 @@ async def get_report(report_id: str):
             'message': 'Report data not available'
         }
 
+def generate_email_html(kpis: dict, role: str, plant: str) -> str:
+    """Generate HTML email content with KPI data"""
+    now = datetime.now().strftime('%Y-%m-%d %H:%M')
+    
+    # Get KPI values safely
+    kpi_data = kpis.get('kpis', {})
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <!-- Header -->
+            <tr>
+                <td style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 30px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Star Cement</h1>
+                    <p style="color: #e0e7ff; margin: 5px 0 0 0; font-size: 14px;">AI Powered KPI Dashboard Report</p>
+                </td>
+            </tr>
+            
+            <!-- Report Info -->
+            <tr>
+                <td style="padding: 20px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="font-size: 14px; color: #64748b;">
+                                <strong>Role:</strong> {role}<br>
+                                <strong>Plant:</strong> {plant if plant != 'all' else 'All Plants'}<br>
+                                <strong>Generated:</strong> {now}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+            <!-- KPI Cards -->
+            <tr>
+                <td style="padding: 20px;">
+                    <h2 style="color: #1e293b; font-size: 18px; margin: 0 0 15px 0;">Key Performance Indicators</h2>
+                    <table width="100%" cellpadding="10" cellspacing="0" style="border: 1px solid #e2e8f0; border-radius: 8px;">
+    """
+    
+    # Add KPI rows based on role
+    kpi_configs = {
+        'CXO': [
+            ('Total Cement', 'total_cement_mt', 'MT'),
+            ('EBITDA/Ton', 'avg_ebitda_ton', '₹'),
+            ('Margin', 'avg_margin_pct', '%'),
+            ('Cost/Ton', 'avg_cost_ton', '₹'),
+            ('Capacity Util', 'avg_capacity_util', '%'),
+            ('Revenue/Ton', 'revenue_per_ton', '₹')
+        ],
+        'Plant Head': [
+            ('Total Cement', 'total_cement_mt', 'MT'),
+            ('Capacity Util', 'avg_capacity_util', '%'),
+            ('Uptime', 'uptime_pct', '%'),
+            ('Avg Downtime', 'avg_downtime_hrs', 'hrs'),
+            ('MTBF', 'avg_mtbf_hrs', 'hrs'),
+            ('28d Strength', 'avg_strength_28d', 'MPa')
+        ],
+        'Energy Manager': [
+            ('Power Consumption', 'avg_power_kwh_ton', 'kWh/T'),
+            ('Heat Consumption', 'avg_heat_kcal_kg', 'kcal/kg'),
+            ('AFR Usage', 'avg_afr_pct', '%'),
+            ('Fuel Cost', 'avg_fuel_cost_ton', '₹/T'),
+            ('Savings Potential', 'savings_potential', '₹')
+        ],
+        'Sales': [
+            ('Total Dispatch', 'total_dispatch_mt', 'MT'),
+            ('Realization', 'avg_realization_ton', '₹/MT'),
+            ('OTIF %', 'avg_otif_pct', '%'),
+            ('Total Revenue', 'total_revenue', '₹'),
+            ('Freight Cost', 'avg_freight_ton', '₹/MT'),
+            ('Net Realization', 'net_realization', '₹/MT')
+        ]
+    }
+    
+    kpi_list = kpi_configs.get(role, kpi_configs['CXO'])
+    
+    for i, (label, key, unit) in enumerate(kpi_list):
+        value = kpi_data.get(key, 0)
+        if isinstance(value, float):
+            formatted_value = f"{value:,.2f}" if value < 1000 else f"{value:,.0f}"
+        else:
+            formatted_value = f"{value:,}" if isinstance(value, (int, float)) else str(value)
+        
+        bg_color = '#ffffff' if i % 2 == 0 else '#f8fafc'
+        html += f"""
+                        <tr style="background-color: {bg_color};">
+                            <td style="font-size: 14px; color: #64748b; width: 50%;">{label}</td>
+                            <td style="font-size: 16px; font-weight: bold; color: #1e293b; text-align: right;">
+                                {formatted_value} {unit}
+                            </td>
+                        </tr>
+        """
+    
+    html += """
+                    </table>
+                </td>
+            </tr>
+            
+            <!-- Footer -->
+            <tr>
+                <td style="background-color: #1e293b; padding: 20px; text-align: center;">
+                    <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                        This is an automated report from Star Cement AI Powered KPI Dashboard.<br>
+                        © 2025 Star Cement Ltd. All rights reserved.
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+    
+    return html
+
+@api_router.post("/send-report")
+async def send_report(request: EmailReportRequest, current_user: dict = Depends(get_current_user)):
+    """Send KPI report to specified email"""
+    
+    # Check if Resend is configured
+    if not RESEND_API_KEY or not RESEND_AVAILABLE:
+        raise HTTPException(
+            status_code=503, 
+            detail="Email service not configured. Please add RESEND_API_KEY to environment."
+        )
+    
+    try:
+        # Fetch KPIs for the report
+        conn = get_db_connection()
+        role = request.role
+        plant = request.plant if request.plant and request.plant.strip() else "all"
+        plant_filter = "" if plant == "all" else f"AND plant_name = '{plant}'"
+        
+        # Build KPIs based on role (simplified version)
+        kpis = {}
+        
+        # Common KPIs
+        result = conn.execute(f"""
+            SELECT 
+                SUM(cement_mt) as total_cement_mt,
+                AVG(capacity_util_pct) as avg_capacity_util
+            FROM fact_production
+            WHERE 1=1 {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        kpis.update(result)
+        
+        # Financial KPIs
+        fin_result = conn.execute(f"""
+            SELECT 
+                AVG(ebitda_rs_ton) as avg_ebitda_ton,
+                AVG(cost_rs_ton) as avg_cost_ton,
+                AVG(margin_pct) as avg_margin_pct
+            FROM fact_finance
+            WHERE 1=1 {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        kpis.update(fin_result)
+        
+        # Energy KPIs
+        energy_result = conn.execute(f"""
+            SELECT 
+                AVG(power_kwh_ton) as avg_power_kwh_ton,
+                AVG(heat_kcal_kg) as avg_heat_kcal_kg,
+                AVG(afr_pct) as avg_afr_pct,
+                AVG(fuel_cost_rs_ton) as avg_fuel_cost_ton
+            FROM fact_energy
+            WHERE 1=1 {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        kpis.update(energy_result)
+        
+        # Sales KPIs
+        sales_result = conn.execute(f"""
+            SELECT 
+                SUM(dispatch_mt) as total_dispatch_mt,
+                AVG(realization_rs_ton) as avg_realization_ton,
+                AVG(otif_pct) as avg_otif_pct,
+                AVG(freight_rs_ton) as avg_freight_ton
+            FROM fact_sales
+            WHERE 1=1 {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        kpis.update(sales_result)
+        
+        # Maintenance KPIs
+        maint_result = conn.execute(f"""
+            SELECT 
+                AVG(mtbf_hrs) as avg_mtbf_hrs,
+                AVG(mttr_hrs) as avg_mttr_hrs,
+                AVG(breakdown_hrs) as avg_downtime_hrs
+            FROM fact_maintenance
+            WHERE 1=1 {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        kpis.update(maint_result)
+        
+        # Quality KPIs
+        quality_result = conn.execute(f"""
+            SELECT 
+                AVG(strength_28d) as avg_strength_28d,
+                AVG(blaine) as avg_blaine
+            FROM fact_quality
+            WHERE 1=1 {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        kpis.update(quality_result)
+        
+        conn.close()
+        
+        # Calculate derived KPIs
+        if kpis.get('avg_realization_ton') and kpis.get('avg_freight_ton'):
+            kpis['net_realization'] = kpis['avg_realization_ton'] - kpis['avg_freight_ton']
+        if kpis.get('total_dispatch_mt') and kpis.get('avg_realization_ton'):
+            kpis['total_revenue'] = kpis['total_dispatch_mt'] * kpis['avg_realization_ton']
+        if kpis.get('avg_realization_ton') and kpis.get('avg_cost_ton'):
+            kpis['revenue_per_ton'] = kpis['avg_realization_ton']
+        if kpis.get('avg_power_kwh_ton'):
+            kpis['savings_potential'] = (kpis['avg_power_kwh_ton'] - 70) * kpis.get('total_cement_mt', 0) * 6
+        if kpis.get('avg_downtime_hrs'):
+            kpis['uptime_pct'] = 100 - (kpis['avg_downtime_hrs'] / 24 * 100)
+        
+        # Generate HTML email
+        html_content = generate_email_html({'kpis': kpis}, role, plant)
+        
+        # Send email
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [request.recipient_email],
+            "subject": f"Star Cement KPI Report - {role} Dashboard",
+            "html": html_content
+        }
+        
+        email_response = await asyncio.to_thread(resend.Emails.send, params)
+        
+        logger.info(f"Email sent to {request.recipient_email}, ID: {email_response.get('id')}")
+        
+        return {
+            "status": "success",
+            "message": f"Report sent successfully to {request.recipient_email}",
+            "email_id": email_response.get("id")
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to send email: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
