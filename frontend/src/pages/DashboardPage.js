@@ -21,6 +21,7 @@ export default function DashboardPage({ user }) {
   const [kpis, setKpis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAIChat, setShowAIChat] = useState(false);
+  const roleGradients = getRoleGradients(role);
 
   const fetchKPIs = async () => {
     setLoading(true);
@@ -30,7 +31,7 @@ export default function DashboardPage({ user }) {
         role,
         start: dateRange.start,
         end: dateRange.end,
-        plant
+        plant: plant || 'all'
       });
 
       const response = await fetch(`${API}/kpis?${params}`, {
@@ -41,9 +42,11 @@ export default function DashboardPage({ user }) {
         const data = await response.json();
         setKpis(data);
       } else {
-        toast.error('Failed to load KPIs');
+        const errorData = await response.json();
+        toast.error(errorData.detail || 'Failed to load KPIs');
       }
     } catch (error) {
+      console.error('KPI fetch error:', error);
       toast.error('Network error loading KPIs');
     } finally {
       setLoading(false);
@@ -52,7 +55,8 @@ export default function DashboardPage({ user }) {
 
   useEffect(() => {
     fetchKPIs();
-  }, [role, dateRange, plant]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, plant]);
 
   if (loading) {
     return (
