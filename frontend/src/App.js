@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import '@/App.css';
 import LoginPage from '@/pages/LoginPage';
 import UploadPage from '@/pages/UploadPage';
-import DashboardPage from '@/pages/DashboardPage';
+import DashboardPagePowerBI from '@/pages/DashboardPagePowerBI';
 import AdminPage from '@/pages/AdminPage';
 import { Toaster } from '@/components/ui/sonner';
 
