@@ -326,23 +326,46 @@ export default function DashboardPagePowerBI({ user }) {
         {/* Bar Chart - Plant Comparison */}
         {kpis && kpis.comparisons && kpis.comparisons.length > 0 && (
           <div className="bg-white p-6 rounded-lg shadow-lg mb-8" data-testid="plant-comparison-chart">
-            <h3 className="text-lg font-heading font-semibold mb-4 text-gray-800">
-              Plant Performance Comparison
-            </h3>
+            <div className="mb-4">
+              <h3 className="text-lg font-heading font-semibold text-gray-800">
+                Plant-wise Performance Comparison
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Benchmarking EBITDA/Ton across all plants - Identify best performers and improvement opportunities
+              </p>
+            </div>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={kpis.comparisons}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="plant_name" stroke="#6B7280" style={{ fontSize: '12px' }} />
-                <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
-                <Tooltip content={<CustomTooltip />} />
+                <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} label={{ value: '₹/MT', angle: -90, position: 'insideLeft' }} />
+                <Tooltip content={<CustomTooltip role={role} />} />
                 <Legend />
-                <Bar dataKey="ebitda_ton" name="EBITDA/Ton" radius={[8, 8, 0, 0]}>
+                <Bar dataKey="ebitda_ton" name="EBITDA per Ton (₹/MT)" radius={[8, 8, 0, 0]}>
                   {kpis.comparisons.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={POWERBI_COLORS.vibrant[index % POWERBI_COLORS.vibrant.length]} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+            <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-xs text-gray-600">Best Performer</p>
+                <p className="text-sm font-bold text-green-600">{kpis.comparisons[0]?.plant_name}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Average EBITDA</p>
+                <p className="text-sm font-bold text-blue-600">
+                  ₹{(kpis.comparisons.reduce((sum, p) => sum + (p.ebitda_ton || 0), 0) / kpis.comparisons.length).toFixed(2)}/MT
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Improvement Gap</p>
+                <p className="text-sm font-bold text-orange-600">
+                  ₹{((kpis.comparisons[0]?.ebitda_ton || 0) - (kpis.comparisons[kpis.comparisons.length - 1]?.ebitda_ton || 0)).toFixed(2)}/MT
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
