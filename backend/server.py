@@ -226,18 +226,27 @@ async def get_kpis(
         comparison_query = f"""
             SELECT 
                 f.plant_name,
-                AVG(ebitda_rs_ton) as ebitda_ton,
-                SUM(f.ebitda_rs_ton * p.cement_mt) / SUM(p.cement_mt) as weighted_ebitda
+                AVG(f.ebitda_rs_ton) as ebitda_ton
             FROM fact_finance f
-            LEFT JOIN fact_production p ON f.date = p.date AND f.plant_name = p.plant_name
             WHERE f.date >= '{start}' AND f.date <= '{end}'
             GROUP BY f.plant_name
             ORDER BY ebitda_ton DESC
         """
         
-        comparisons = conn.execute(comparison_query).fetchdf().to_dict('records')
+        comparisons = conn.execute(comparison_query).fetchdf()
+        # Convert NaN to 0
+        comparisons = comparisons.fillna(0)
+        comparisons = comparisons.to_dict('records')
+        
+        # Clean margin trend data
+        margin_trend = margin_trend.fillna(0)
         
         conn.close()
+        
+        # Clean KPI results
+        for key in kpis_result:
+            if kpis_result[key] is None or (isinstance(kpis_result[key], float) and (kpis_result[key] != kpis_result[key])):  # Check for NaN
+                kpis_result[key] = 0
         
         return {
             'status': 'ok',
