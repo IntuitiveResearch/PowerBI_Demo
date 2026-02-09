@@ -1,0 +1,264 @@
+import React, { useState, useEffect } from 'react';
+import NavBar from '@/components/NavBar';
+import KPICard from '@/components/KPICard';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Factory, Zap, TrendingUp, Package, MessageCircle, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
+import AIChatModal from '@/components/AIChatModal';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+export default function DashboardPage({ user }) {
+  const [role, setRole] = useState(user?.role || 'CXO');
+  const [dateRange, setDateRange] = useState({ start: '2024-01-01', end: '2025-12-31' });
+  const [plant, setPlant] = useState('all');
+  const [kpis, setKpis] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showAIChat, setShowAIChat] = useState(false);
+
+  const fetchKPIs = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const params = new URLSearchParams({
+        role,
+        start: dateRange.start,
+        end: dateRange.end,
+        plant
+      });
+
+      const response = await fetch(`${API}/kpis?${params}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setKpis(data);
+      } else {
+        toast.error('Failed to load KPIs');
+      }
+    } catch (error) {
+      toast.error('Network error loading KPIs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchKPIs();
+  }, [role, dateRange, plant]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <NavBar user={user} />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <NavBar user={user} />
+
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-2">
+              Dashboard
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground">
+              Role: <span className="font-medium text-foreground">{role}</span>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Role Selector */}
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger data-testid="role-selector" className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CXO">CXO</SelectItem>
+                <SelectItem value="Plant Head">Plant Head</SelectItem>
+                <SelectItem value="Energy Manager">Energy Manager</SelectItem>
+                <SelectItem value="Sales">Sales</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Plant Filter */}
+            <Select value={plant} onValueChange={setPlant}>
+              <SelectTrigger data-testid="plant-selector" className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Plants</SelectItem>
+                <SelectItem value="Lumshnong">Lumshnong</SelectItem>
+                <SelectItem value="Sonapur">Sonapur</SelectItem>
+                <SelectItem value="Siliguri">Siliguri</SelectItem>
+                <SelectItem value="Jalpaiguri">Jalpaiguri</SelectItem>
+                <SelectItem value="Guwahati">Guwahati</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* AI Chat Button */}
+            <Button
+              data-testid="ai-chat-button"
+              onClick={() => setShowAIChat(true)}
+              className="btn-primary"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Ask AI
+            </Button>
+          </div>
+        </div>
+
+        {/* KPI Cards Grid */}
+        {kpis && kpis.kpis && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
+            <KPICard
+              dataTestId="kpi-cement-production"
+              label="Total Cement Production"
+              value={kpis.kpis.total_cement_mt}
+              unit="MT"
+              icon={Factory}
+            />
+            <KPICard
+              dataTestId="kpi-ebitda"
+              label="Avg EBITDA per Ton"
+              value={kpis.kpis.avg_ebitda_ton}
+              unit="₹/MT"
+              icon={TrendingUp}
+            />
+            <KPICard
+              dataTestId="kpi-power"
+              label="Avg Power Consumption"
+              value={kpis.kpis.avg_power_kwh_ton}
+              unit="kWh/T"
+              icon={Zap}
+            />
+            <KPICard
+              dataTestId="kpi-margin"
+              label="Avg Margin"
+              value={kpis.kpis.avg_margin_pct}
+              unit="%"
+              icon={Package}
+            />
+          </div>
+        )}
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Margin Trend */}
+          {kpis && kpis.series && kpis.series.margin_trend && (
+            <div className="kpi-card p-6" data-testid="margin-trend-chart">
+              <h3 className="text-lg font-heading font-semibold mb-4">Margin Trend</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={kpis.series.margin_trend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="#64748b"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis 
+                    stroke="#64748b"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#1e293b',
+                      border: 'none',
+                      borderRadius: '4px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#0E7490" 
+                    strokeWidth={2}
+                    dot={{ fill: '#0E7490', r: 3 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Plant Comparison */}
+          {kpis && kpis.comparisons && (
+            <div className="kpi-card p-6" data-testid="plant-comparison-chart">
+              <h3 className="text-lg font-heading font-semibold mb-4">Plant Performance (EBITDA/Ton)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={kpis.comparisons}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="plant_name" 
+                    stroke="#64748b"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis 
+                    stroke="#64748b"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#1e293b',
+                      border: 'none',
+                      borderRadius: '4px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="ebitda_ton" 
+                    fill="#0E7490"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+
+        {/* Additional KPIs */}
+        {kpis && kpis.kpis && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <KPICard
+              dataTestId="kpi-capacity"
+              label="Avg Capacity Utilization"
+              value={kpis.kpis.avg_capacity_util}
+              unit="%"
+            />
+            <KPICard
+              dataTestId="kpi-downtime"
+              label="Avg Downtime"
+              value={kpis.kpis.avg_downtime_hrs}
+              unit="hrs"
+            />
+            <KPICard
+              dataTestId="kpi-otif"
+              label="Avg OTIF"
+              value={kpis.kpis.avg_otif_pct}
+              unit="%"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* AI Chat Modal */}
+      <AIChatModal 
+        open={showAIChat} 
+        onClose={() => setShowAIChat(false)}
+        contextFilters={{ start: dateRange.start, end: dateRange.end, plant }}
+      />
+    </div>
+  );
+}
