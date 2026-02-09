@@ -970,15 +970,24 @@ async def send_report(request: EmailReportRequest, current_user: dict = Depends(
             "html": html_content
         }
         
-        email_response = await asyncio.to_thread(resend.Emails.send, params)
-        
-        logger.info(f"Email sent to {request.recipient_email}, ID: {email_response.get('id')}")
-        
-        return {
-            "status": "success",
-            "message": f"Report sent successfully to {request.recipient_email}",
-            "email_id": email_response.get("id")
-        }
+        try:
+            email_response = await asyncio.to_thread(resend.Emails.send, params)
+            logger.info(f"Email sent to {request.recipient_email}, ID: {email_response.get('id')}")
+            
+            return {
+                "status": "success",
+                "message": f"Report sent successfully to {request.recipient_email}",
+                "email_id": email_response.get("id")
+            }
+        except Exception as email_error:
+            error_msg = str(email_error)
+            if "verify a domain" in error_msg.lower() or "testing emails" in error_msg.lower():
+                # Domain not verified - provide helpful message
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Email domain not verified. In Resend free tier, you can only send emails to your own verified email address. Please verify a domain at resend.com/domains to send to any recipient."
+                )
+            raise HTTPException(status_code=500, detail=f"Failed to send email: {error_msg}")
         
     except Exception as e:
         logger.error(f"Failed to send email: {str(e)}")
