@@ -25,6 +25,16 @@ A production-ready KPI analytics platform for Star Cement Ltd, featuring offline
 
 ## Implemented Features (December 2025)
 
+### Role-Specific Dashboards
+Each role now has a completely different dashboard layout with relevant KPIs and charts:
+
+| Role | Dashboard | Primary KPIs | Charts Focus |
+|------|-----------|--------------|--------------|
+| CXO | Executive Dashboard | EBITDA, Margin, Cost, Revenue | Financial trends, Cost bridge, Production mix |
+| Plant Head | Operations Dashboard | Capacity Util, Uptime, Downtime, Quality | Production performance, Quality metrics, Maintenance |
+| Energy Manager | Energy Dashboard | Power kWh/T, Heat, AFR%, Savings | Energy consumption trends, Plant comparison |
+| Sales | Sales Dashboard | Dispatch, Realization, OTIF%, Revenue | Regional mix, Pricing, Delivery performance |
+
 ### Dashboard Visualizations (19+ charts)
 1. **Primary KPI Cards** - 4 gradient cards with icons
 2. **Compact KPI Grid** - 8+ secondary metrics with trends/targets
