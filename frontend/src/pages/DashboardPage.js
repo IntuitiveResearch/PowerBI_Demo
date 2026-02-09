@@ -354,27 +354,100 @@ export default function DashboardPage({ user }) {
           )}
         </div>
 
-        {/* Additional KPIs */}
+        {/* Additional Role-Specific KPIs */}
         {kpis && kpis.kpis && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <KPICard
-              dataTestId="kpi-capacity"
-              label="Avg Capacity Utilization"
-              value={kpis.kpis.avg_capacity_util}
-              unit="%"
-            />
-            <KPICard
-              dataTestId="kpi-downtime"
-              label="Avg Downtime"
-              value={kpis.kpis.avg_downtime_hrs}
-              unit="hrs"
-            />
-            <KPICard
-              dataTestId="kpi-otif"
-              label="Avg OTIF"
-              value={kpis.kpis.avg_otif_pct}
-              unit="%"
-            />
+            {role === 'CXO' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-capacity"
+                  label="Avg Capacity Utilization"
+                  value={kpis.kpis.avg_capacity_util}
+                  unit="%"
+                />
+                <KPICard
+                  dataTestId="kpi-clinker-factor"
+                  label="Avg Clinker Factor"
+                  value={kpis.kpis.avg_clinker_factor}
+                  unit=""
+                />
+                <KPICard
+                  dataTestId="kpi-otif"
+                  label="Avg OTIF"
+                  value={kpis.kpis.avg_otif_pct}
+                  unit="%"
+                />
+              </>
+            )}
+            
+            {role === 'Plant Head' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-blaine"
+                  label="Avg Blaine"
+                  value={kpis.kpis.avg_blaine}
+                  unit=""
+                />
+                <KPICard
+                  dataTestId="kpi-strength"
+                  label="Avg 28D Strength"
+                  value={kpis.kpis.avg_strength_28d}
+                  unit="MPa"
+                />
+                <KPICard
+                  dataTestId="kpi-mttr"
+                  label="Avg MTTR"
+                  value={kpis.kpis.avg_mttr_hrs}
+                  unit="hrs"
+                />
+              </>
+            )}
+            
+            {role === 'Energy Manager' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-power-variance"
+                  label="Power Variance (Best vs Worst)"
+                  value={kpis.kpis.power_variance}
+                  unit="kWh/T"
+                />
+                <KPICard
+                  dataTestId="kpi-best-power"
+                  label="Best Power Performance"
+                  value={kpis.kpis.best_power}
+                  unit="kWh/T"
+                />
+                <KPICard
+                  dataTestId="kpi-worst-power"
+                  label="Improvement Opportunity"
+                  value={kpis.kpis.worst_power}
+                  unit="kWh/T"
+                />
+              </>
+            )}
+            
+            {role === 'Sales' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-margin"
+                  label="Avg Margin"
+                  value={kpis.kpis.avg_margin_pct}
+                  unit="%"
+                />
+                <KPICard
+                  dataTestId="kpi-price-variance"
+                  label="Price Variance (Best vs Worst)"
+                  value={kpis.kpis.price_variance}
+                  unit="₹/T"
+                />
+                <KPICard
+                  dataTestId="kpi-ebitda"
+                  label="Avg EBITDA Contribution"
+                  value={kpis.kpis.avg_ebitda_ton}
+                  unit="₹/T"
+                />
+              </>
+            )}
           </div>
         )}
       </div>
