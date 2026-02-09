@@ -614,15 +614,15 @@ async def get_chart_data(
             {'name': 'EBITDA', 'value': round(cost_breakdown.get('ebitda', 0) or 0, 0), 'type': 'profit'}
         ]
         
-        # 9. Weekly Trend (last 12 weeks)
+        # 9. Weekly Trend (last 12 weeks) - DuckDB syntax
         weekly = conn.execute(f"""
             SELECT 
-                strftime('%Y-W%W', date) as week,
+                strftime(date, '%Y-W%W') as week,
                 SUM(cement_mt) as cement,
                 AVG(capacity_util_pct) as capacity
             FROM fact_production
-            WHERE date >= date('{end}', '-84 days') AND date <= '{end}' {plant_filter}
-            GROUP BY strftime('%Y-W%W', date)
+            WHERE date >= '{end}'::DATE - INTERVAL '84 days' AND date <= '{end}' {plant_filter}
+            GROUP BY strftime(date, '%Y-W%W')
             ORDER BY week
         """).fetchdf()
         weekly = weekly.fillna(0)
