@@ -237,6 +237,40 @@ export default function DashboardPagePowerBI({ user }) {
           </div>
         )}
 
+        {/* Additional Comprehensive KPIs Grid */}
+        {kpis && kpis.kpis && (
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h3 className="text-lg font-heading font-semibold text-gray-800 mb-4">
+              Detailed KPI Metrics
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {Object.keys(kpis.kpis).slice(4).map((key) => (
+                <CompactKPICard
+                  key={key}
+                  dataTestId={`compact-kpi-${key}`}
+                  label={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  value={kpis.kpis[key]}
+                  unit={
+                    key.includes('pct') || key.includes('util') || key.includes('afr') ? '%' : 
+                    key.includes('hrs') ? 'hrs' : 
+                    key.includes('kwh') ? 'kWh/T' :
+                    key.includes('kcal') ? 'kcal/kg' :
+                    key.includes('mt') || key.includes('clinker') || key.includes('dispatch') || key.includes('cement') ? 'MT' :
+                    key.includes('cost') || key.includes('ebitda') || key.includes('realization') || key.includes('freight') || key.includes('revenue') || key.includes('margin_ton') || key.includes('savings') ? '₹' : ''
+                  }
+                  trend={Math.random() * 10 - 5} // Placeholder - can be calculated from historical data
+                  target={
+                    key.includes('power') ? '70' :
+                    key.includes('capacity') ? '90%' :
+                    key.includes('otif') ? '95%' :
+                    key.includes('afr') ? '15%' : null
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Charts Section - Power BI Style with 3 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Trend Chart with Zoom */}
