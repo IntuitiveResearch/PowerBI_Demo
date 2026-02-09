@@ -180,30 +180,106 @@ async def get_kpis(
     end: str = "2025-12-31",
     plant: str = "all"
 ):
-    """Get KPIs for specified role and filters"""
+    """Get role-specific KPIs for specified filters"""
     try:
         conn = get_db_connection()
         
         plant_filter = "" if plant == "all" else f"AND p.plant_name = '{plant}'"
         
-        # Get aggregate KPIs
-        query = f"""
-            SELECT 
-                SUM(p.cement_mt) as total_cement_mt,
-                AVG(f.ebitda_rs_ton) as avg_ebitda_ton,
-                AVG(e.power_kwh_ton) as avg_power_kwh_ton,
-                AVG(q.clinker_factor) as avg_clinker_factor,
-                AVG(p.capacity_util_pct) as avg_capacity_util,
-                AVG(p.downtime_hrs) as avg_downtime_hrs,
-                AVG(s.otif_pct) as avg_otif_pct,
-                AVG(f.margin_pct) as avg_margin_pct
-            FROM fact_production p
-            LEFT JOIN fact_finance f ON p.date = f.date AND p.plant_name = f.plant_name
-            LEFT JOIN fact_energy e ON p.date = e.date AND p.plant_name = e.plant_name
-            LEFT JOIN fact_quality q ON p.date = q.date AND p.plant_name = q.plant_name
-            LEFT JOIN fact_sales s ON p.date = s.date AND p.plant_name = s.plant_name
-            WHERE p.date >= '{start}' AND p.date <= '{end}' {plant_filter}
-        """
+        # Role-specific KPI queries
+        if role == "CXO":
+            # Strategic: Financial, Value Creation, Risk
+            query = f"""
+                SELECT 
+                    SUM(p.cement_mt) as total_cement_mt,
+                    SUM(p.clinker_mt) as total_clinker_mt,
+                    AVG(f.ebitda_rs_ton) as avg_ebitda_ton,
+                    AVG(f.cost_rs_ton) as avg_cost_ton,
+                    AVG(f.margin_pct) as avg_margin_pct,
+                    AVG(e.power_kwh_ton) as avg_power_kwh_ton,
+                    AVG(q.clinker_factor) as avg_clinker_factor,
+                    AVG(p.capacity_util_pct) as avg_capacity_util,
+                    AVG(s.realization_rs_ton) as avg_realization_ton,
+                    AVG(s.freight_rs_ton) as avg_freight_ton,
+                    AVG(s.otif_pct) as avg_otif_pct,
+                    AVG(e.afr_pct) as avg_afr_pct
+                FROM fact_production p
+                LEFT JOIN fact_finance f ON p.date = f.date AND p.plant_name = f.plant_name
+                LEFT JOIN fact_energy e ON p.date = e.date AND p.plant_name = e.plant_name
+                LEFT JOIN fact_quality q ON p.date = q.date AND p.plant_name = q.plant_name
+                LEFT JOIN fact_sales s ON p.date = s.date AND p.plant_name = s.plant_name
+                WHERE p.date >= '{start}' AND p.date <= '{end}' {plant_filter}
+            """
+        
+        elif role == "Plant Head":
+            # Operations: Production, Equipment, Quality, Loss Management
+            query = f"""
+                SELECT 
+                    SUM(p.cement_mt) as total_cement_mt,
+                    AVG(p.cement_mt) as avg_daily_cement,
+                    SUM(p.clinker_mt) as total_clinker_mt,
+                    AVG(p.capacity_util_pct) as avg_capacity_util,
+                    AVG(p.downtime_hrs) as avg_downtime_hrs,
+                    AVG(q.blaine) as avg_blaine,
+                    AVG(q.strength_28d) as avg_strength_28d,
+                    AVG(q.clinker_factor) as avg_clinker_factor,
+                    AVG(m.breakdown_hrs) as avg_breakdown_hrs,
+                    AVG(m.mtbf_hrs) as avg_mtbf_hrs,
+                    AVG(m.mttr_hrs) as avg_mttr_hrs
+                FROM fact_production p
+                LEFT JOIN fact_quality q ON p.date = q.date AND p.plant_name = q.plant_name
+                LEFT JOIN fact_maintenance m ON p.date = m.date AND p.plant_name = m.plant_name
+                WHERE p.date >= '{start}' AND p.date <= '{end}' {plant_filter}
+            """
+        
+        elif role == "Energy Manager":
+            # Energy: Cost Reduction, Sustainability, Optimization
+            query = f"""
+                SELECT 
+                    AVG(e.power_kwh_ton) as avg_power_kwh_ton,
+                    AVG(e.heat_kcal_kg) as avg_heat_kcal_kg,
+                    AVG(e.fuel_cost_rs_ton) as avg_fuel_cost_ton,
+                    AVG(e.afr_pct) as avg_afr_pct,
+                    MAX(e.power_kwh_ton) as max_power_kwh_ton,
+                    MIN(e.power_kwh_ton) as min_power_kwh_ton,
+                    MAX(e.heat_kcal_kg) as max_heat_kcal_kg,
+                    MIN(e.heat_kcal_kg) as min_heat_kcal_kg,
+                    SUM(p.cement_mt) as total_cement_mt
+                FROM fact_energy e
+                LEFT JOIN fact_production p ON e.date = p.date AND e.plant_name = p.plant_name
+                WHERE e.date >= '{start}' AND e.date <= '{end}' {plant_filter}
+            """
+        
+        elif role == "Sales":
+            # Sales: Margin, Pricing, Logistics, Market
+            query = f"""
+                SELECT 
+                    SUM(s.dispatch_mt) as total_dispatch_mt,
+                    AVG(s.realization_rs_ton) as avg_realization_ton,
+                    AVG(s.freight_rs_ton) as avg_freight_ton,
+                    AVG(s.otif_pct) as avg_otif_pct,
+                    AVG(f.margin_pct) as avg_margin_pct,
+                    AVG(f.ebitda_rs_ton) as avg_ebitda_ton,
+                    MAX(s.realization_rs_ton) as max_realization_ton,
+                    MIN(s.realization_rs_ton) as min_realization_ton
+                FROM fact_sales s
+                LEFT JOIN fact_finance f ON s.date = f.date AND s.plant_name = f.plant_name
+                WHERE s.date >= '{start}' AND s.date <= '{end}' {plant_filter}
+            """
+        
+        else:
+            # Default to CXO view
+            query = f"""
+                SELECT 
+                    SUM(p.cement_mt) as total_cement_mt,
+                    AVG(f.ebitda_rs_ton) as avg_ebitda_ton,
+                    AVG(e.power_kwh_ton) as avg_power_kwh_ton,
+                    AVG(f.margin_pct) as avg_margin_pct
+                FROM fact_production p
+                LEFT JOIN fact_finance f ON p.date = f.date AND p.plant_name = f.plant_name
+                LEFT JOIN fact_energy e ON p.date = e.date AND p.plant_name = e.plant_name
+                WHERE p.date >= '{start}' AND p.date <= '{end}' {plant_filter}
+            """
         
         kpis_result = conn.execute(query).fetchdf().to_dict('records')[0]
         
