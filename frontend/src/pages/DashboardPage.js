@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from '@/components/NavBar';
-import KPICard from '@/components/KPICard';
+import PowerBIKPICard from '@/components/PowerBIKPICard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { 
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush 
+} from 'recharts';
 import { Factory, Zap, TrendingUp, Package, MessageCircle, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import AIChatModal from '@/components/AIChatModal';
+import { getRoleGradients, POWERBI_COLORS } from '@/utils/powerBIColors';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
