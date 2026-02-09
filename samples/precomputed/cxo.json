@@ -1,25 +1,61 @@
 {
   "reportType": "CXO",
+  "reportId": "cxo",
+  "title": "Executive Dashboard",
   "kpis": {
     "totalCement": 125340,
-    "avgEBITDA": 1120,
+    "avgEBITDA": 1120.5,
     "avgPower": 72.3,
-    "avgMargin": 22.5
+    "avgMargin": 22.5,
+    "avgCapacityUtil": 87.5,
+    "avgClinkerFactor": 0.73,
+    "totalRevenue": 608150000
   },
   "charts": {
     "marginTrend": [
-      {"month": "2024-01", "value": 21.5},
-      {"month": "2024-02", "value": 22.1},
-      {"month": "2024-03", "value": 22.8},
-      {"month": "2024-04", "value": 21.9},
-      {"month": "2024-05", "value": 23.2}
+      {"month": "2024-11", "value": 21.5},
+      {"month": "2024-12", "value": 22.1},
+      {"month": "2025-01", "value": 22.8},
+      {"month": "2025-02", "value": 21.9},
+      {"month": "2025-03", "value": 23.2}
     ],
     "plantComparison": [
-      {"plant": "Lumshnong", "ebitda": 1180},
-      {"plant": "Sonapur", "ebitda": 1150},
-      {"plant": "Siliguri", "ebitda": 1100},
-      {"plant": "Jalpaiguri", "ebitda": 1090},
-      {"plant": "Guwahati", "ebitda": 1080}
+      {"plant": "Lumshnong", "ebitda": 1180.5, "production": 26800},
+      {"plant": "Sonapur", "ebitda": 1150.2, "production": 25600},
+      {"plant": "Siliguri", "ebitda": 1100.8, "production": 24200},
+      {"plant": "Jalpaiguri", "ebitda": 1090.3, "production": 24100},
+      {"plant": "Guwahati", "ebitda": 1080.7, "production": 24640}
+    ],
+    "ebitdaTrend": [
+      {"month": "2024-11", "ebitda": 1095.5},
+      {"month": "2024-12", "ebitda": 1110.2},
+      {"month": "2025-01", "ebitda": 1125.8},
+      {"month": "2025-02", "ebitda": 1105.3},
+      {"month": "2025-03", "ebitda": 1135.7}
+    ],
+    "costBreakdown": [
+      {"category": "Raw Materials", "value": 45.2},
+      {"category": "Energy", "value": 22.8},
+      {"category": "Labor", "value": 12.5},
+      {"category": "Logistics", "value": 8.3},
+      {"category": "Maintenance", "value": 6.2},
+      {"category": "Others", "value": 5.0}
+    ],
+    "regionPerformance": [
+      {"region": "Northeast", "revenue": 365000000, "margin": 23.5},
+      {"region": "East", "revenue": 243150000, "margin": 21.2}
     ]
-  }
+  },
+  "alerts": [
+    {
+      "severity": "medium",
+      "message": "EBITDA declined by 1.8% in Feb 2025 vs Jan 2025",
+      "metric": "ebitda"
+    },
+    {
+      "severity": "low",
+      "message": "Capacity utilization at Jalpaiguri below target (85% vs 88%)",
+      "metric": "capacity"
+    }
+  ]
 }

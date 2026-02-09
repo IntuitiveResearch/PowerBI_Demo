@@ -1,0 +1,38 @@
+{
+  "reportType": "Sales",
+  "reportId": "sales",
+  "title": "Sales & Logistics Dashboard",
+  "kpis": {
+    "totalDispatch": 124560,
+    "avgRealization": 4850.5,
+    "avgFreight": 325.8,
+    "avgOTIF": 92.3
+  },
+  "charts": {
+    "dispatchTrend": [
+      {"month": "2024-11", "dispatch_mt": 23800},
+      {"month": "2024-12", "dispatch_mt": 25200},
+      {"month": "2025-01", "dispatch_mt": 25600},
+      {"month": "2025-02", "dispatch_mt": 24360},
+      {"month": "2025-03", "dispatch_mt": 25600}
+    ],
+    "realizationByRegion": [
+      {"region": "Northeast", "realization": 4920.5},
+      {"region": "East", "realization": 4780.2}
+    ],
+    "otifPerformance": [
+      {"plant": "Lumshnong", "otif_pct": 94.5},
+      {"plant": "Sonapur", "otif_pct": 93.2},
+      {"plant": "Siliguri", "otif_pct": 91.8},
+      {"plant": "Jalpaiguri", "otif_pct": 90.5},
+      {"plant": "Guwahati", "otif_pct": 91.6}
+    ],
+    "freightAnalysis": [
+      {"month": "2024-11", "avg_freight": 318.5},
+      {"month": "2024-12", "avg_freight": 322.8},
+      {"month": "2025-01", "avg_freight": 325.2},
+      {"month": "2025-02", "avg_freight": 328.5},
+      {"month": "2025-03", "avg_freight": 330.1}
+    ]
+  }
+}

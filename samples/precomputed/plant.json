@@ -1,0 +1,31 @@
+{
+  "reportType": "Plant",
+  "reportId": "plant",
+  "title": "Plant Operations Dashboard",
+  "kpis": {
+    "totalProduction": 25680,
+    "avgCapacityUtil": 87.5,
+    "totalDowntime": 156.3,
+    "avgClinkerFactor": 0.73
+  },
+  "charts": {
+    "productionTrend": [
+      {"date": "2024-11", "cement_mt": 24500, "clinker_mt": 17885},
+      {"date": "2024-12", "cement_mt": 25680, "clinker_mt": 18746},
+      {"date": "2025-01", "cement_mt": 26100, "clinker_mt": 19053},
+      {"date": "2025-02", "cement_mt": 24800, "clinker_mt": 18104},
+      {"date": "2025-03", "cement_mt": 26500, "clinker_mt": 19345}
+    ],
+    "capacityUtilization": [
+      {"line": "Line-1", "utilization": 89.2},
+      {"line": "Line-2", "utilization": 85.8}
+    ],
+    "downtimeByEquipment": [
+      {"equipment": "Kiln", "hours": 45.2},
+      {"equipment": "VRM", "hours": 38.5},
+      {"equipment": "Crusher", "hours": 32.1},
+      {"equipment": "Packing", "hours": 24.8},
+      {"equipment": "Compressor", "hours": 15.7}
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "reportType": "Energy",
+  "reportId": "energy",
+  "title": "Energy Management Dashboard",
+  "kpis": {
+    "avgPowerConsumption": 72.3,
+    "avgHeatConsumption": 785.4,
+    "avgFuelCost": 850.2,
+    "avgAFR": 18.5
+  },
+  "charts": {
+    "powerTrend": [
+      {"month": "2024-11", "power_kwh_ton": 73.5, "target": 72.0},
+      {"month": "2024-12", "power_kwh_ton": 72.8, "target": 72.0},
+      {"month": "2025-01", "power_kwh_ton": 71.9, "target": 72.0},
+      {"month": "2025-02", "power_kwh_ton": 72.3, "target": 72.0},
+      {"month": "2025-03", "power_kwh_ton": 71.5, "target": 72.0}
+    ],
+    "fuelCostByPlant": [
+      {"plant": "Lumshnong", "cost": 820.5},
+      {"plant": "Sonapur", "cost": 845.2},
+      {"plant": "Siliguri", "cost": 865.8},
+      {"plant": "Jalpaiguri", "cost": 870.3},
+      {"plant": "Guwahati", "cost": 880.1}
+    ],
+    "afrTrend": [
+      {"month": "2024-11", "afr_pct": 17.2},
+      {"month": "2024-12", "afr_pct": 17.8},
+      {"month": "2025-01", "afr_pct": 18.5},
+      {"month": "2025-02", "afr_pct": 18.9},
+      {"month": "2025-03", "afr_pct": 19.2}
+    ]
+  }
+}
