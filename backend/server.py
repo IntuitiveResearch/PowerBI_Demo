@@ -438,15 +438,25 @@ async def get_kpis(
             }
         elif role == "Sales":
             response['kpis'] = {
+                # Volume KPIs
                 'total_dispatch_mt': round(kpis_result.get('total_dispatch_mt', 0) or 0, 2),
+                # Pricing KPIs
                 'avg_realization_ton': round(kpis_result.get('avg_realization_ton', 0) or 0, 2),
+                'max_realization_ton': round(kpis_result.get('max_realization_ton', 0) or 0, 2),
+                'min_realization_ton': round(kpis_result.get('min_realization_ton', 0) or 0, 2),
+                'price_variance': round((kpis_result.get('max_realization_ton', 0) or 0) - (kpis_result.get('min_realization_ton', 0) or 0), 2),
+                # Logistics KPIs
                 'avg_freight_ton': round(kpis_result.get('avg_freight_ton', 0) or 0, 2),
                 'avg_otif_pct': round(kpis_result.get('avg_otif_pct', 0) or 0, 2),
+                # Financial KPIs
                 'avg_margin_pct': round(kpis_result.get('avg_margin_pct', 0) or 0, 2),
                 'avg_ebitda_ton': round(kpis_result.get('avg_ebitda_ton', 0) or 0, 2),
-                'price_variance': round((kpis_result.get('max_realization_ton', 0) or 0) - (kpis_result.get('min_realization_ton', 0) or 0), 2),
+                # Calculated KPIs
                 'best_realization': round(kpis_result.get('max_realization_ton', 0) or 0, 2),
-                'worst_realization': round(kpis_result.get('min_realization_ton', 0) or 0, 2)
+                'worst_realization': round(kpis_result.get('min_realization_ton', 0) or 0, 2),
+                'net_realization': round((kpis_result.get('avg_realization_ton', 0) or 0) - (kpis_result.get('avg_freight_ton', 0) or 0), 2),
+                'total_revenue': round((kpis_result.get('total_dispatch_mt', 0) or 0) * (kpis_result.get('avg_realization_ton', 0) or 0), 2),
+                'revenue_per_day': round(((kpis_result.get('total_dispatch_mt', 0) or 0) * (kpis_result.get('avg_realization_ton', 0) or 0)) / 365, 2)
             }
         else:
             # Default view
