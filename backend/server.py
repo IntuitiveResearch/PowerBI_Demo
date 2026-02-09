@@ -186,12 +186,12 @@ async def get_kpis(
         
         # Handle plant filter - ensure it's never None or empty
         plant = plant if plant and plant.strip() else "all"
-        plant_filter = "" if plant == "all" else f"AND p.plant_name = '{plant}'"
         
         logger.info(f"KPI request: role={role}, plant={plant}, start={start}, end={end}")
         
-        # Role-specific KPI queries
+        # Role-specific KPI queries with correct plant filters
         if role == "CXO":
+            plant_filter = "" if plant == "all" else f"AND p.plant_name = '{plant}'"
             # Strategic: Financial, Value Creation, Risk
             query = f"""
                 SELECT 
