@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar';
 import PowerBIKPICard from '@/components/PowerBIKPICard';
 import CompactKPICard from '@/components/CompactKPICard';
 import PlantComparison from '@/components/PlantComparison';
+import EmailReportModal from '@/components/EmailReportModal';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -13,7 +14,7 @@ import {
 } from 'recharts';
 import { 
   Factory, Zap, TrendingUp, Package, MessageCircle, DollarSign, Gauge, 
-  Flame, Truck, Activity, Wrench, Target, BarChart3, Droplets, Timer, GitCompare, Sparkles
+  Flame, Truck, Activity, Wrench, Target, BarChart3, Droplets, Timer, GitCompare, Sparkles, Mail
 } from 'lucide-react';
 import { toast } from 'sonner';
 import AIChatModal from '@/components/AIChatModal';
