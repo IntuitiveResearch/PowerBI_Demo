@@ -208,12 +208,13 @@ async def get_kpis(
         kpis_result = conn.execute(query).fetchdf().to_dict('records')[0]
         
         # Get margin trend
+        trend_filter = "" if plant == "all" else f"AND plant_name = '{plant}'"
         trend_query = f"""
             SELECT 
                 date,
                 AVG(margin_pct) as value
             FROM fact_finance
-            WHERE date >= '{start}' AND date <= '{end}' {plant_filter}
+            WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
             GROUP BY date
             ORDER BY date
         """
