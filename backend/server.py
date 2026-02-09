@@ -491,13 +491,13 @@ async def get_chart_data(
         # 1. Monthly Production Trend
         monthly_prod = conn.execute(f"""
             SELECT 
-                strftime('%Y-%m', date) as month,
+                strftime(date, '%Y-%m') as month,
                 SUM(cement_mt) as cement,
                 SUM(clinker_mt) as clinker,
                 AVG(capacity_util_pct) as capacity
             FROM fact_production
             WHERE date >= '{start}' AND date <= '{end}' {plant_filter}
-            GROUP BY strftime('%Y-%m', date)
+            GROUP BY strftime(date, '%Y-%m')
             ORDER BY month
         """).fetchdf()
         monthly_prod = monthly_prod.fillna(0)
