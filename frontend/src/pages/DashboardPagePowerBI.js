@@ -92,9 +92,33 @@ export default function DashboardPagePowerBI({ user }) {
   const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAIChat, setShowAIChat] = useState(false);
+  const [showCompareMode, setShowCompareMode] = useState(false);
+  const [selectedPlantsForCompare, setSelectedPlantsForCompare] = useState([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
   
   const roleConfig = ROLE_CONFIG[role] || ROLE_CONFIG['CXO'];
   const roleGradients = getRoleGradients(role);
+
+  const togglePlantSelection = (plantName) => {
+    setSelectedPlantsForCompare(prev => {
+      if (prev.includes(plantName)) {
+        return prev.filter(p => p !== plantName);
+      }
+      if (prev.length < 3) {
+        return [...prev, plantName];
+      }
+      toast.error('Maximum 3 plants can be compared');
+      return prev;
+    });
+  };
+
+  const startComparison = () => {
+    if (selectedPlantsForCompare.length < 2) {
+      toast.error('Select at least 2 plants to compare');
+      return;
+    }
+    setShowComparisonModal(true);
+  };
 
   const fetchData = async () => {
     setLoading(true);
