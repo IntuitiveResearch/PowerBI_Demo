@@ -1,13 +1,13 @@
 # Star Cement KPI Platform - Product Requirements Document
 
 ## Overview
-A production-ready KPI analytics platform for Star Cement Ltd, featuring offline-only mode with role-based dashboards and comprehensive visualizations resembling premium Power BI dashboards.
+A production-ready **AI Powered KPI Dashboard** for Star Cement Ltd, featuring offline-only mode with role-based dashboards and comprehensive visualizations resembling premium Power BI dashboards.
 
 ## Core Requirements
 1. **Offline-Only Mode**: Data uploaded from Excel file (`StarCement_DemoData.xlsx`)
-2. **Role-Based Dashboards**: CXO, Plant Head, Energy Manager, Sales Head
+2. **Role-Based Dashboards**: CXO, Plant Head, Energy Manager, Sales Head - each with unique KPIs and charts
 3. **Power BI-Style UI**: Vibrant colors, multiple chart types, dense information layout
-4. **Interactive Charts**: Tooltips, zoom/brush capabilities
+4. **Compare Plants Mode**: Side-by-side comparison of 2-3 plants with detailed metrics
 5. **AI Chat**: Powered by Emergent LLM Key for insights
 
 ## User Personas & Credentials
@@ -24,6 +24,23 @@ A production-ready KPI analytics platform for Star Cement Ltd, featuring offline
 - **Database**: `/app/backend/star_cement.duckdb`
 
 ## Implemented Features (December 2025)
+
+### Branding Updates
+- Updated to "AI Powered KPI Dashboard" across Login page and NavBar
+- Added "AI Powered" badge on dashboard header
+- Gradient logo styling (blue to purple)
+
+### Compare Plants Mode (NEW)
+- Select 2-3 plants for side-by-side comparison
+- Plant selection panel with checkboxes
+- Comparison modal with:
+  - KPI Summary Cards (Production, EBITDA, Capacity, Power)
+  - Performance Scorecard (Radar chart)
+  - Financial Comparison (Horizontal bar chart)
+  - Energy Efficiency (Grouped bar chart)
+  - EBITDA Trend Comparison (Line chart)
+  - Detailed Metrics Table with "Best" indicator
+  - AI Comparison Insight (auto-generated analysis)
 
 ### Role-Specific Dashboards
 Each role now has a completely different dashboard layout with relevant KPIs and charts:
