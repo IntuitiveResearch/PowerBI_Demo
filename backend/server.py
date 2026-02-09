@@ -184,7 +184,11 @@ async def get_kpis(
     try:
         conn = get_db_connection()
         
+        # Handle plant filter - ensure it's never None or empty
+        plant = plant if plant and plant.strip() else "all"
         plant_filter = "" if plant == "all" else f"AND p.plant_name = '{plant}'"
+        
+        logger.info(f"KPI request: role={role}, plant={plant}, start={start}, end={end}")
         
         # Role-specific KPI queries
         if role == "CXO":
