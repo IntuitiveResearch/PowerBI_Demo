@@ -283,20 +283,53 @@ async def get_kpis(
         
         kpis_result = conn.execute(query).fetchdf().to_dict('records')[0]
         
-        # Get margin trend
+        # Get role-specific trend data
         trend_filter = "" if plant == "all" else f"AND plant_name = '{plant}'"
-        trend_query = f"""
-            SELECT 
-                date,
-                AVG(margin_pct) as value
-            FROM fact_finance
-            WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
-            GROUP BY date
-            ORDER BY date
-        """
         
-        margin_trend = conn.execute(trend_query).fetchdf()
-        margin_trend['date'] = margin_trend['date'].astype(str)
+        if role == "CXO":
+            # EBITDA and Margin trends
+            trend_query = f"""
+                SELECT date, AVG(ebitda_rs_ton) as ebitda, AVG(margin_pct) as margin
+                FROM fact_finance
+                WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
+                GROUP BY date ORDER BY date
+            """
+        elif role == "Plant Head":
+            # Capacity and downtime trends
+            trend_query = f"""
+                SELECT date, AVG(capacity_util_pct) as capacity, AVG(downtime_hrs) as downtime
+                FROM fact_production
+                WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
+                GROUP BY date ORDER BY date
+            """
+        elif role == "Energy Manager":
+            # Power and AFR trends
+            trend_query = f"""
+                SELECT date, AVG(power_kwh_ton) as power, AVG(afr_pct) as afr
+                FROM fact_energy
+                WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
+                GROUP BY date ORDER BY date
+            """
+        elif role == "Sales":
+            # Realization and OTIF trends
+            trend_query = f"""
+                SELECT date, AVG(realization_rs_ton) as realization, AVG(otif_pct) as otif
+                FROM fact_sales
+                WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
+                GROUP BY date ORDER BY date
+            """
+        else:
+            # Default margin trend
+            trend_query = f"""
+                SELECT date, AVG(margin_pct) as value
+                FROM fact_finance
+                WHERE date >= '{start}' AND date <= '{end}' {trend_filter}
+                GROUP BY date ORDER BY date
+            """
+        
+        trends = conn.execute(trend_query).fetchdf()
+        trends['date'] = trends['date'].astype(str)
+        trends = trends.fillna(0)
         
         # Get plant comparisons
         comparison_query = f"""
