@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
 import logging
+import asyncio
 from pathlib import Path
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any, List
-from datetime import timedelta
+from datetime import timedelta, datetime
 import tempfile
 import json
 
@@ -16,6 +17,22 @@ from database import init_star_schema, get_db_connection
 from excel_processor import ExcelProcessor
 from data_ingestion import ingest_excel_data
 from ai_insights import generate_insight, SAMPLE_PROMPTS
+
+# Try to import resend
+try:
+    import resend
+    RESEND_AVAILABLE = True
+except ImportError:
+    RESEND_AVAILABLE = False
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+# Initialize Resend if available
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+if RESEND_API_KEY and RESEND_AVAILABLE:
+    resend.api_key = RESEND_API_KEY
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
