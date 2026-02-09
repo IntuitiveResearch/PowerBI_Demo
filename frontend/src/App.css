@@ -1,34 +1,82 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Industrial KPI Dashboard Styles */
+
+.kpi-card {
+  @apply bg-white border border-border/50 shadow-sm rounded-sm p-4;
+  transition: all 0.2s ease-out;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.kpi-card:hover {
+  @apply -translate-y-0.5 shadow-md;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.kpi-label {
+  @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
 }
 
-.App-link {
-    color: #61dafb;
+.kpi-value {
+  @apply text-3xl font-mono font-medium tracking-tight text-foreground;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.kpi-change {
+  @apply text-sm font-mono;
+}
+
+.kpi-change.positive {
+  @apply text-success;
+}
+
+.kpi-change.negative {
+  @apply text-error;
+}
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-sm font-medium shadow-sm active:scale-95;
+  transition: all 0.2s ease-out;
+}
+
+.btn-secondary {
+  @apply bg-white text-secondary-foreground border border-input hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 rounded-sm font-medium;
+  transition: all 0.2s ease-out;
+}
+
+.input-field {
+  @apply flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm ring-offset-background;
+  @apply file:border-0 file:bg-transparent file:text-sm file:font-medium;
+  @apply placeholder:text-muted-foreground;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.chart-container {
+  @apply w-full h-full;
+}
+
+/* Drag and drop */
+.dropzone {
+  @apply border-2 border-dashed border-border rounded-sm p-8 text-center;
+  @apply hover:border-primary hover:bg-primary/5;
+  transition: all 0.2s ease-out;
+}
+
+.dropzone.active {
+  @apply border-primary bg-primary/10;
+}
+
+/* Grid pattern background */
+.grid-pattern {
+  background-image: radial-gradient(circle, #94a3b8 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Glassmorphism effect */
+.glass {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  backdrop-filter: blur(12px);
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
