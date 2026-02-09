@@ -588,7 +588,13 @@ export default function DashboardPagePowerBI({ user }) {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
           <div>
-            <h1 className="text-2xl font-heading font-bold text-gray-900">{roleConfig.title}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-heading font-bold text-gray-900">{roleConfig.title}</h1>
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 text-xs font-medium rounded-full">
+                <Sparkles className="w-3 h-3" />
+                AI Powered
+              </span>
+            </div>
             <p className="text-sm text-gray-500">{roleConfig.subtitle} • Star Cement Ltd</p>
             <div className="flex gap-2 mt-2">
               {roleConfig.focusAreas.map((area, idx) => (
@@ -625,6 +631,17 @@ export default function DashboardPagePowerBI({ user }) {
             </Select>
 
             <Button
+              data-testid="compare-plants-button"
+              onClick={() => setShowCompareMode(!showCompareMode)}
+              size="sm"
+              variant={showCompareMode ? "default" : "outline"}
+              className={showCompareMode ? "bg-blue-600 text-white" : ""}
+            >
+              <GitCompare className="w-4 h-4 mr-1" />
+              Compare
+            </Button>
+
+            <Button
               data-testid="ai-chat-button"
               onClick={() => setShowAIChat(true)}
               size="sm"
@@ -635,6 +652,48 @@ export default function DashboardPagePowerBI({ user }) {
             </Button>
           </div>
         </div>
+
+        {/* Compare Plants Selection Panel */}
+        {showCompareMode && (
+          <div className="mb-4 bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-200 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <GitCompare className="w-5 h-5 text-blue-600" />
+                  Select Plants to Compare (2-3)
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">Choose plants for side-by-side performance analysis</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {AVAILABLE_PLANTS.map(plantName => (
+                  <label 
+                    key={plantName}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all ${
+                      selectedPlantsForCompare.includes(plantName) 
+                        ? 'bg-blue-600 text-white border-blue-600' 
+                        : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400'
+                    }`}
+                  >
+                    <Checkbox
+                      checked={selectedPlantsForCompare.includes(plantName)}
+                      onCheckedChange={() => togglePlantSelection(plantName)}
+                      className={selectedPlantsForCompare.includes(plantName) ? 'border-white data-[state=checked]:bg-white data-[state=checked]:text-blue-600' : ''}
+                    />
+                    <span className="text-sm font-medium">{plantName}</span>
+                  </label>
+                ))}
+              </div>
+              <Button
+                onClick={startComparison}
+                disabled={selectedPlantsForCompare.length < 2}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+              >
+                <GitCompare className="w-4 h-4 mr-1" />
+                Compare {selectedPlantsForCompare.length > 0 ? `(${selectedPlantsForCompare.length})` : ''}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Role-specific Dashboard */}
         {renderRoleDashboard()}
