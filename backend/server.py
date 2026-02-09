@@ -369,20 +369,29 @@ async def get_kpis(
             'comparisons': comparisons
         }
         
-        # Map KPIs based on role
+        # Map KPIs based on role with comprehensive metrics
         if role == "CXO":
             response['kpis'] = {
+                # Primary Financial KPIs
                 'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
+                'total_clinker_mt': round(kpis_result.get('total_clinker_mt', 0) or 0, 2),
                 'avg_ebitda_ton': round(kpis_result.get('avg_ebitda_ton', 0) or 0, 2),
                 'avg_cost_ton': round(kpis_result.get('avg_cost_ton', 0) or 0, 2),
                 'avg_margin_pct': round(kpis_result.get('avg_margin_pct', 0) or 0, 2),
-                'avg_power_kwh_ton': round(kpis_result.get('avg_power_kwh_ton', 0) or 0, 2),
-                'avg_clinker_factor': round(kpis_result.get('avg_clinker_factor', 0) or 0, 3),
+                # Operations KPIs
                 'avg_capacity_util': round(kpis_result.get('avg_capacity_util', 0) or 0, 2),
+                'avg_clinker_factor': round(kpis_result.get('avg_clinker_factor', 0) or 0, 3),
+                # Energy KPIs
+                'avg_power_kwh_ton': round(kpis_result.get('avg_power_kwh_ton', 0) or 0, 2),
+                'avg_afr_pct': round(kpis_result.get('avg_afr_pct', 0) or 0, 2),
+                # Sales & Logistics KPIs
                 'avg_realization_ton': round(kpis_result.get('avg_realization_ton', 0) or 0, 2),
                 'avg_freight_ton': round(kpis_result.get('avg_freight_ton', 0) or 0, 2),
                 'avg_otif_pct': round(kpis_result.get('avg_otif_pct', 0) or 0, 2),
-                'avg_afr_pct': round(kpis_result.get('avg_afr_pct', 0) or 0, 2)
+                # Calculated KPIs
+                'revenue_per_ton': round((kpis_result.get('avg_realization_ton', 0) or 0), 2),
+                'net_margin_ton': round((kpis_result.get('avg_ebitda_ton', 0) or 0) - (kpis_result.get('avg_cost_ton', 0) or 0), 2),
+                'clinker_production': round((kpis_result.get('total_cement_mt', 0) or 0) * (kpis_result.get('avg_clinker_factor', 0) or 0), 2)
             }
         elif role == "Plant Head":
             response['kpis'] = {
