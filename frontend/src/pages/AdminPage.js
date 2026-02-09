@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import NavBar from '@/components/NavBar';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Settings, Database, FileText, AlertCircle } from 'lucide-react';
+import { Settings, Database, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function AdminPage({ user }) {
-  const [demoMode, setDemoMode] = useState(
-    process.env.REACT_APP_DEMO_MODE === 'offline'
-  );
+  const demoMode = 'offline'; // Always offline
 
   return (
     <div className="min-h-screen bg-background">
@@ -19,12 +15,12 @@ export default function AdminPage({ user }) {
             Admin Settings
           </h1>
           <p className="text-base md:text-lg text-muted-foreground">
-            Manage platform configuration and demo modes
+            Platform configuration - Offline Demo Mode
           </p>
         </div>
 
         {/* Demo Mode Setting */}
-        <div className="kpi-card mb-6" data-testid="demo-mode-card">
+        <div className="kpi-card mb-6 bg-primary/5 border-primary/20" data-testid="demo-mode-card">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
@@ -32,14 +28,24 @@ export default function AdminPage({ user }) {
                 <h3 className="text-lg font-heading font-semibold">Demo Mode</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Switch between offline demo (static charts) and online mode (Power BI embed)
+                Platform is configured for <strong>Offline Demo Mode</strong> using static charts and precomputed data. No Power BI authentication required.
               </p>
               <div className="flex items-center gap-3">
-                <Switch
-                  data-testid="demo-mode-switch"
-                  checked={demoMode}
-                  onCheckedChange={setDemoMode}
-                />
+                <div className="h-10 px-4 py-2 bg-primary/10 rounded-sm flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">
+                    Offline Mode Active
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-muted rounded-sm">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Benefits:</strong> Works without internet • No Power BI credentials needed • Perfect for in-room demos • Uses Recharts for all visualizations
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
                 <span className="text-sm font-medium">
                   {demoMode ? 'Offline Demo Mode' : 'Online Mode'}
                 </span>
