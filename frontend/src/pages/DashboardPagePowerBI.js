@@ -280,31 +280,45 @@ export default function DashboardPagePowerBI({ user }) {
           )}
 
           {/* Pie Chart - Plant Distribution */}
-          {pieData.length > 0 && (
+          {pieDataWithTotal.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-lg" data-testid="pie-chart">
-              <h3 className="text-lg font-heading font-semibold mb-4 text-gray-800">
-                Plant Performance Distribution
-              </h3>
+              <div className="mb-4">
+                <h3 className="text-lg font-heading font-semibold text-gray-800">
+                  Plant Performance Share
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  EBITDA/Ton contribution by plant - Hover to see details
+                </p>
+              </div>
               <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
-                    data={pieData}
+                    data={pieDataWithTotal}
                     cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={(entry) => entry.name}
+                    cy="45%"
+                    labelLine={true}
+                    label={renderPieLabel}
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {pieData.map((entry, index) => (
+                    {pieDataWithTotal.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Tooltip content={<CustomPieTooltip />} />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    formatter={(value) => <span className="text-sm">{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <p className="text-xs text-gray-600 text-center">
+                  💡 Larger slice = Higher profitability • Target: Balanced performance across plants
+                </p>
+              </div>
             </div>
           )}
         </div>
