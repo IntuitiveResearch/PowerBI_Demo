@@ -14,17 +14,73 @@ import { getRoleGradients, POWERBI_COLORS } from '@/utils/powerBIColors';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Custom tooltip for Power BI style
-const CustomTooltip = ({ active, payload, label }) => {
+// Enhanced Custom tooltip with role-specific context
+const CustomTooltip = ({ active, payload, label, role }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gray-900 text-white p-3 rounded-lg shadow-xl border border-gray-700">
-        <p className="font-semibold mb-2">{label}</p>
+      <div className="bg-gray-900 text-white p-4 rounded-lg shadow-xl border border-gray-700 max-w-xs">
+        <p className="font-bold text-lg mb-2 border-b border-gray-600 pb-2">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color }} className="text-sm">
-            {entry.name}: <span className="font-bold">{entry.value.toLocaleString()}</span>
-          </p>
+          <div key={index} className="mt-2">
+            <p style={{ color: entry.color }} className="text-sm font-semibold">
+              {entry.name}
+            </p>
+            <p className="text-xl font-bold text-white">
+              {typeof entry.value === 'number' ? entry.value.toLocaleString('en-IN', { maximumFractionDigits: 2 }) : entry.value}
+            </p>
+            {/* Contextual info based on role */}
+            {role === 'CXO' && entry.name.includes('ebitda') && (
+              <p className="text-xs text-gray-400 mt-1">Profitability per ton of cement</p>
+            )}
+            {role === 'Plant Head' && entry.name.includes('capacity') && (
+              <p className="text-xs text-gray-400 mt-1">% of rated capacity utilized</p>
+            )}
+            {role === 'Energy Manager' && entry.name.includes('power') && (
+              <p className="text-xs text-gray-400 mt-1">Lower is better - target: 70 kWh/T</p>
+            )}
+            {role === 'Sales' && entry.name.includes('realization') && (
+              <p className="text-xs text-gray-400 mt-1">Average selling price per ton</p>
+            )}
+          </div>
         ))}
+        <p className="text-xs text-gray-500 mt-3 pt-2 border-t border-gray-700">
+          {role === 'CXO' && 'Strategic View: Financial & Operational Performance'}
+          {role === 'Plant Head' && 'Operations View: Production Efficiency & Reliability'}
+          {role === 'Energy Manager' && 'Energy View: Cost Optimization & Sustainability'}
+          {role === 'Sales' && 'Sales View: Market Performance & Logistics'}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom Pie Chart Label with context
+const renderPieLabel = (entry) => {
+  return `${entry.name}: ${entry.value.toFixed(0)}`;
+};
+
+// Custom Pie Tooltip
+const CustomPieTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    const total = payload[0].payload.total || 0;
+    const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
+    
+    return (
+      <div className="bg-gray-900 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+        <p className="font-bold text-lg mb-2" style={{ color: data.payload.color }}>
+          {data.name}
+        </p>
+        <div className="space-y-1">
+          <p className="text-sm text-gray-400">EBITDA/Ton</p>
+          <p className="text-2xl font-bold">₹{data.value.toLocaleString('en-IN')}/MT</p>
+          <p className="text-sm text-gray-400 mt-2">Share of total performance</p>
+          <p className="text-lg font-semibold text-green-400">{percentage}%</p>
+        </div>
+        <p className="text-xs text-gray-500 mt-3 pt-2 border-t border-gray-700">
+          Higher EBITDA = Better profitability
+        </p>
       </div>
     );
   }
