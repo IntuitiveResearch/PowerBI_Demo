@@ -77,7 +77,7 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage user={user} />
+                <DashboardPagePowerBI user={user} />
               </ProtectedRoute>
             }
           />
