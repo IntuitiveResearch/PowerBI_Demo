@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from '@/components/NavBar';
 import PowerBIKPICard from '@/components/PowerBIKPICard';
+import CompactKPICard from '@/components/CompactKPICard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
