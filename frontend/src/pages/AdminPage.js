@@ -46,10 +46,29 @@ export default function AdminPage({ user }) {
             </div>
           </div>
         </div>
-                <span className="text-sm font-medium">
-                  {demoMode ? 'Offline Demo Mode' : 'Online Mode'}
-                </span>
-              </div>
+
+        {/* Visualization Info */}
+        <div className="kpi-card mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-heading font-semibold">Data & Visualization</h3>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Visualization Library:</span>
+              <span className="font-mono font-medium">Recharts</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Data Source:</span>
+              <span className="font-mono font-medium">DuckDB + Precomputed JSON</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Precomputed Reports:</span>
+              <span className="font-mono font-medium">CXO, Plant, Energy, Sales</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Real-time Data:</span>
+              <span className="font-mono font-medium text-success">✓ Available via API</span>
             </div>
           </div>
         </div>
