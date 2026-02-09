@@ -96,6 +96,7 @@ export default function DashboardPagePowerBI({ user }) {
   const [showCompareMode, setShowCompareMode] = useState(false);
   const [selectedPlantsForCompare, setSelectedPlantsForCompare] = useState([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
   
   const roleConfig = ROLE_CONFIG[role] || ROLE_CONFIG['CXO'];
   const roleGradients = getRoleGradients(role);
