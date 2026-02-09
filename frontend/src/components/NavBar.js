@@ -24,14 +24,14 @@ export default function NavBar({ user }) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <div className="w-10 h-10 bg-primary rounded-sm flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-lg font-heading font-bold text-foreground">
                 Star Cement
               </h1>
-              <p className="text-xs text-muted-foreground">KPI Platform</p>
+              <p className="text-xs text-muted-foreground">AI Powered KPI Dashboard</p>
             </div>
           </div>
 
