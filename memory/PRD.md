@@ -42,6 +42,17 @@ A production-ready **AI Powered KPI Dashboard** for Star Cement Ltd, featuring o
   - Detailed Metrics Table with "Best" indicator
   - AI Comparison Insight (auto-generated analysis)
 
+### Email Reports (NEW)
+- "Send Report" button in dashboard header
+- Email modal to enter recipient address
+- Sends formatted HTML email with:
+  - Company branding (Star Cement header)
+  - Role-specific KPIs table
+  - Report metadata (role, plant, timestamp)
+  - Professional footer
+- Integration: Resend API
+- Note: Requires domain verification for sending to external addresses
+
 ### Role-Specific Dashboards
 Each role now has a completely different dashboard layout with relevant KPIs and charts:
 
