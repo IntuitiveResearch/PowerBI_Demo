@@ -278,7 +278,7 @@ export default function DashboardPagePowerBI({ user }) {
             <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg" data-testid="trend-chart">
               <div className="mb-4">
                 <h3 className="text-lg font-heading font-semibold text-gray-800">
-                  Performance Trend (Drag Brush to Zoom)
+                  Performance Trend
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
                   {role === 'CXO' && 'Track EBITDA and margin trends over time to identify profitability patterns'}
