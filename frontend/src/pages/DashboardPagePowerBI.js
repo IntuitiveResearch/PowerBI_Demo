@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import NavBar from '@/components/NavBar';
 import PowerBIKPICard from '@/components/PowerBIKPICard';
 import CompactKPICard from '@/components/CompactKPICard';
+import PlantComparison from '@/components/PlantComparison';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush,
@@ -11,7 +13,7 @@ import {
 } from 'recharts';
 import { 
   Factory, Zap, TrendingUp, Package, MessageCircle, DollarSign, Gauge, 
-  Flame, Truck, Activity, Wrench, Target, BarChart3, Droplets, Timer
+  Flame, Truck, Activity, Wrench, Target, BarChart3, Droplets, Timer, GitCompare, Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 import AIChatModal from '@/components/AIChatModal';
@@ -23,6 +25,9 @@ import {
 import { getRoleGradients, POWERBI_COLORS } from '@/utils/powerBIColors';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Available plants for comparison
+const AVAILABLE_PLANTS = ['Lumshnong', 'Sonapur', 'Siliguri', 'Jalpaiguri', 'Guwahati'];
 
 // Role-specific configurations
 const ROLE_CONFIG = {
