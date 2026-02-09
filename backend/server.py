@@ -68,6 +68,13 @@ class KPIParams(BaseModel):
     end: Optional[str] = "2025-12-31"
     plant: Optional[str] = "all"
 
+class EmailReportRequest(BaseModel):
+    recipient_email: EmailStr
+    role: Optional[str] = "CXO"
+    plant: Optional[str] = "all"
+    include_comparison: Optional[bool] = False
+    comparison_plants: Optional[List[str]] = []
+
 # Auth dependency
 async def get_current_user(authorization: Optional[str] = Header(None)):
     if not authorization:
