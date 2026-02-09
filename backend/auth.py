@@ -30,22 +30,22 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
-# Demo users
+# Demo users - passwords loaded from environment variables
 DEMO_USERS = {
     "demo@starcement.com": {
         "password": pwd_context.hash(os.getenv("APP_DEMO_ADMIN_PASSWORD", "Demo1234!")),
         "role": "CXO"
     },
     "plant@starcement.com": {
-        "password": pwd_context.hash("Plant1234!"),
+        "password": pwd_context.hash(os.getenv("APP_DEMO_PLANT_PASSWORD", "Plant1234!")),
         "role": "Plant Head"
     },
     "energy@starcement.com": {
-        "password": pwd_context.hash("Energy1234!"),
+        "password": pwd_context.hash(os.getenv("APP_DEMO_ENERGY_PASSWORD", "Energy1234!")),
         "role": "Energy Manager"
     },
     "sales@starcement.com": {
-        "password": pwd_context.hash("Sales1234!"),
+        "password": pwd_context.hash(os.getenv("APP_DEMO_SALES_PASSWORD", "Sales1234!")),
         "role": "Sales"
     }
 }
