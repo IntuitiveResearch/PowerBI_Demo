@@ -257,6 +257,7 @@ async def get_kpis(
             """
         
         elif role == "Sales":
+            plant_filter = "" if plant == "all" else f"AND s.plant_name = '{plant}'"
             # Sales: Margin, Pricing, Logistics, Market
             query = f"""
                 SELECT 
