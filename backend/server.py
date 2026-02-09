@@ -473,6 +473,195 @@ async def get_kpis(
         logger.error(f"KPI error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/charts")
+async def get_chart_data(
+    role: str = "CXO",
+    start: str = "2024-01-01",
+    end: str = "2025-12-31",
+    plant: str = "all"
+):
+    """Get comprehensive chart data for dashboard visualizations"""
+    try:
+        conn = get_db_connection()
+        plant = plant if plant and plant.strip() else "all"
+        plant_filter = "" if plant == "all" else f"AND plant_name = '{plant}'"
+        
+        charts = {}
+        
+        # 1. Monthly Production Trend
+        monthly_prod = conn.execute(f"""
+            SELECT 
+                strftime('%Y-%m', date) as month,
+                SUM(cement_mt) as cement,
+                SUM(clinker_mt) as clinker,
+                AVG(capacity_util_pct) as capacity
+            FROM fact_production
+            WHERE date >= '{start}' AND date <= '{end}' {plant_filter}
+            GROUP BY strftime('%Y-%m', date)
+            ORDER BY month
+        """).fetchdf()
+        monthly_prod = monthly_prod.fillna(0)
+        charts['monthly_production'] = monthly_prod.to_dict('records')
+        
+        # 2. Plant-wise Production Distribution
+        plant_prod = conn.execute(f"""
+            SELECT 
+                plant_name,
+                SUM(cement_mt) as cement,
+                AVG(capacity_util_pct) as capacity
+            FROM fact_production
+            WHERE date >= '{start}' AND date <= '{end}'
+            GROUP BY plant_name
+            ORDER BY cement DESC
+        """).fetchdf()
+        plant_prod = plant_prod.fillna(0)
+        charts['plant_production'] = plant_prod.to_dict('records')
+        
+        # 3. Energy Consumption by Plant
+        energy_plant = conn.execute(f"""
+            SELECT 
+                plant_name,
+                AVG(power_kwh_ton) as power,
+                AVG(heat_kcal_kg) as heat,
+                AVG(afr_pct) as afr
+            FROM fact_energy
+            WHERE date >= '{start}' AND date <= '{end}'
+            GROUP BY plant_name
+            ORDER BY power
+        """).fetchdf()
+        energy_plant = energy_plant.fillna(0)
+        charts['energy_by_plant'] = energy_plant.to_dict('records')
+        
+        # 4. Quality Metrics by Plant
+        quality = conn.execute(f"""
+            SELECT 
+                plant_name,
+                AVG(blaine) as blaine,
+                AVG(strength_28d) as strength,
+                AVG(clinker_factor) as clinker_factor
+            FROM fact_quality
+            WHERE date >= '{start}' AND date <= '{end}'
+            GROUP BY plant_name
+        """).fetchdf()
+        quality = quality.fillna(0)
+        charts['quality_by_plant'] = quality.to_dict('records')
+        
+        # 5. Sales by Region
+        sales_region = conn.execute(f"""
+            SELECT 
+                region,
+                SUM(dispatch_mt) as dispatch,
+                AVG(realization_rs_ton) as realization,
+                AVG(otif_pct) as otif
+            FROM fact_sales
+            WHERE date >= '{start}' AND date <= '{end}'
+            GROUP BY region
+            ORDER BY dispatch DESC
+        """).fetchdf()
+        sales_region = sales_region.fillna(0)
+        charts['sales_by_region'] = sales_region.to_dict('records')
+        
+        # 6. Monthly Financial Trend
+        monthly_fin = conn.execute(f"""
+            SELECT 
+                strftime('%Y-%m', date) as month,
+                AVG(cost_rs_ton) as cost,
+                AVG(ebitda_rs_ton) as ebitda,
+                AVG(margin_pct) as margin
+            FROM fact_finance
+            WHERE date >= '{start}' AND date <= '{end}' {plant_filter}
+            GROUP BY strftime('%Y-%m', date)
+            ORDER BY month
+        """).fetchdf()
+        monthly_fin = monthly_fin.fillna(0)
+        charts['monthly_finance'] = monthly_fin.to_dict('records')
+        
+        # 7. Maintenance KPIs by Plant
+        maintenance = conn.execute(f"""
+            SELECT 
+                plant_name,
+                AVG(breakdown_hrs) as breakdown,
+                AVG(mtbf_hrs) as mtbf,
+                AVG(mttr_hrs) as mttr
+            FROM fact_maintenance
+            WHERE date >= '{start}' AND date <= '{end}'
+            GROUP BY plant_name
+        """).fetchdf()
+        maintenance = maintenance.fillna(0)
+        charts['maintenance_by_plant'] = maintenance.to_dict('records')
+        
+        # 8. Cost Breakdown (for waterfall)
+        cost_breakdown = conn.execute(f"""
+            SELECT 
+                AVG(e.fuel_cost_rs_ton) as fuel_cost,
+                AVG(e.power_kwh_ton) * 6 as power_cost,
+                AVG(s.freight_rs_ton) as freight_cost,
+                AVG(f.cost_rs_ton) as total_cost,
+                AVG(s.realization_rs_ton) as realization,
+                AVG(f.ebitda_rs_ton) as ebitda
+            FROM fact_energy e
+            JOIN fact_sales s ON e.date = s.date AND e.plant_name = s.plant_name
+            JOIN fact_finance f ON e.date = f.date AND e.plant_name = f.plant_name
+            WHERE e.date >= '{start}' AND e.date <= '{end}'
+        """).fetchdf().to_dict('records')[0]
+        
+        charts['cost_waterfall'] = [
+            {'name': 'Realization', 'value': round(cost_breakdown.get('realization', 0) or 0, 0), 'type': 'total'},
+            {'name': 'Fuel Cost', 'value': -round(cost_breakdown.get('fuel_cost', 0) or 0, 0), 'type': 'cost'},
+            {'name': 'Power Cost', 'value': -round(cost_breakdown.get('power_cost', 0) or 0, 0), 'type': 'cost'},
+            {'name': 'Freight', 'value': -round(cost_breakdown.get('freight_cost', 0) or 0, 0), 'type': 'cost'},
+            {'name': 'Other Costs', 'value': -round((cost_breakdown.get('total_cost', 0) or 0) - (cost_breakdown.get('fuel_cost', 0) or 0) - (cost_breakdown.get('power_cost', 0) or 0), 0), 'type': 'cost'},
+            {'name': 'EBITDA', 'value': round(cost_breakdown.get('ebitda', 0) or 0, 0), 'type': 'profit'}
+        ]
+        
+        # 9. Weekly Trend (last 12 weeks)
+        weekly = conn.execute(f"""
+            SELECT 
+                strftime('%Y-W%W', date) as week,
+                SUM(cement_mt) as cement,
+                AVG(capacity_util_pct) as capacity
+            FROM fact_production
+            WHERE date >= date('{end}', '-84 days') AND date <= '{end}' {plant_filter}
+            GROUP BY strftime('%Y-W%W', date)
+            ORDER BY week
+        """).fetchdf()
+        weekly = weekly.fillna(0)
+        charts['weekly_trend'] = weekly.to_dict('records')
+        
+        # 10. Performance Radar Data
+        perf_data = conn.execute(f"""
+            SELECT 
+                AVG(p.capacity_util_pct) as capacity,
+                AVG(e.power_kwh_ton) as power,
+                AVG(q.strength_28d) as quality,
+                AVG(s.otif_pct) as delivery,
+                AVG(f.margin_pct) as margin,
+                AVG(e.afr_pct) as sustainability
+            FROM fact_production p
+            JOIN fact_energy e ON p.date = e.date AND p.plant_name = e.plant_name
+            JOIN fact_quality q ON p.date = q.date AND p.plant_name = q.plant_name
+            JOIN fact_sales s ON p.date = s.date AND p.plant_name = s.plant_name
+            JOIN fact_finance f ON p.date = f.date AND p.plant_name = f.plant_name
+            WHERE p.date >= '{start}' AND p.date <= '{end}' {plant_filter}
+        """).fetchdf().to_dict('records')[0]
+        
+        # Normalize to 0-100 scale
+        charts['performance_radar'] = [
+            {'metric': 'Capacity Util', 'current': round(perf_data.get('capacity', 0) or 0, 1), 'target': 90},
+            {'metric': 'Energy Eff', 'current': round(100 - ((perf_data.get('power', 75) or 75) - 65) * 3, 1), 'target': 85},
+            {'metric': 'Quality', 'current': round(min((perf_data.get('quality', 40) or 40) / 55 * 100, 100), 1), 'target': 90},
+            {'metric': 'Delivery', 'current': round(perf_data.get('delivery', 0) or 0, 1), 'target': 95},
+            {'metric': 'Margin', 'current': round(perf_data.get('margin', 0) or 0, 1), 'target': 25},
+            {'metric': 'AFR%', 'current': round(perf_data.get('sustainability', 0) or 0, 1), 'target': 15}
+        ]
+        
+        conn.close()
+        return {'status': 'ok', 'charts': charts}
+        
+    except Exception as e:
+        logger.error(f"Charts error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/insights")
 async def get_insights(request: InsightRequest):
     """Generate AI-powered insights"""
