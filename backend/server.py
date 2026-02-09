@@ -238,6 +238,7 @@ async def get_kpis(
             """
         
         elif role == "Energy Manager":
+            plant_filter = "" if plant == "all" else f"AND e.plant_name = '{plant}'"
             # Energy: Cost Reduction, Sustainability, Optimization
             query = f"""
                 SELECT 
