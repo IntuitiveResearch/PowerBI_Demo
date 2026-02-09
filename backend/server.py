@@ -225,13 +225,13 @@ async def get_kpis(
         # Get plant comparisons
         comparison_query = f"""
             SELECT 
-                plant_name,
+                f.plant_name,
                 AVG(ebitda_rs_ton) as ebitda_ton,
                 SUM(f.ebitda_rs_ton * p.cement_mt) / SUM(p.cement_mt) as weighted_ebitda
             FROM fact_finance f
             LEFT JOIN fact_production p ON f.date = p.date AND f.plant_name = p.plant_name
             WHERE f.date >= '{start}' AND f.date <= '{end}'
-            GROUP BY plant_name
+            GROUP BY f.plant_name
             ORDER BY ebitda_ton DESC
         """
         
