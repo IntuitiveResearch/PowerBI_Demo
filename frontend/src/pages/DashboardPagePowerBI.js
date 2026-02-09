@@ -704,6 +704,14 @@ export default function DashboardPagePowerBI({ user }) {
         onClose={() => setShowAIChat(false)}
         contextFilters={{ role, start: '2024-07-01', end: '2025-12-31', plant }}
       />
+
+      {/* Plant Comparison Modal */}
+      {showComparisonModal && (
+        <PlantComparison 
+          plants={selectedPlantsForCompare}
+          onClose={() => setShowComparisonModal(false)}
+        />
+      )}
     </div>
   );
 }
