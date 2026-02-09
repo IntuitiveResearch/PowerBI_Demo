@@ -124,34 +124,137 @@ export default function DashboardPage({ user }) {
         {/* KPI Cards Grid */}
         {kpis && kpis.kpis && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
-            <KPICard
-              dataTestId="kpi-cement-production"
-              label="Total Cement Production"
-              value={kpis.kpis.total_cement_mt}
-              unit="MT"
-              icon={Factory}
-            />
-            <KPICard
-              dataTestId="kpi-ebitda"
-              label="Avg EBITDA per Ton"
-              value={kpis.kpis.avg_ebitda_ton}
-              unit="₹/MT"
-              icon={TrendingUp}
-            />
-            <KPICard
-              dataTestId="kpi-power"
-              label="Avg Power Consumption"
-              value={kpis.kpis.avg_power_kwh_ton}
-              unit="kWh/T"
-              icon={Zap}
-            />
-            <KPICard
-              dataTestId="kpi-margin"
-              label="Avg Margin"
-              value={kpis.kpis.avg_margin_pct}
-              unit="%"
-              icon={Package}
-            />
+            {role === 'CXO' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-cement-production"
+                  label="Total Cement Production"
+                  value={kpis.kpis.total_cement_mt}
+                  unit="MT"
+                  icon={Factory}
+                />
+                <KPICard
+                  dataTestId="kpi-ebitda"
+                  label="Avg EBITDA per Ton"
+                  value={kpis.kpis.avg_ebitda_ton}
+                  unit="₹/MT"
+                  icon={TrendingUp}
+                />
+                <KPICard
+                  dataTestId="kpi-cost"
+                  label="Avg Cost per Ton"
+                  value={kpis.kpis.avg_cost_ton}
+                  unit="₹/MT"
+                  icon={Package}
+                />
+                <KPICard
+                  dataTestId="kpi-margin"
+                  label="Avg Margin"
+                  value={kpis.kpis.avg_margin_pct}
+                  unit="%"
+                  icon={TrendingUp}
+                />
+              </>
+            )}
+            
+            {role === 'Plant Head' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-daily-cement"
+                  label="Avg Daily Cement"
+                  value={kpis.kpis.avg_daily_cement}
+                  unit="MT/Day"
+                  icon={Factory}
+                />
+                <KPICard
+                  dataTestId="kpi-capacity"
+                  label="Capacity Utilization"
+                  value={kpis.kpis.avg_capacity_util}
+                  unit="%"
+                  icon={TrendingUp}
+                />
+                <KPICard
+                  dataTestId="kpi-downtime"
+                  label="Avg Downtime"
+                  value={kpis.kpis.avg_downtime_hrs}
+                  unit="hrs"
+                  icon={Zap}
+                />
+                <KPICard
+                  dataTestId="kpi-mtbf"
+                  label="Avg MTBF"
+                  value={kpis.kpis.avg_mtbf_hrs}
+                  unit="hrs"
+                  icon={Package}
+                />
+              </>
+            )}
+            
+            {role === 'Energy Manager' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-power"
+                  label="Avg Power Consumption"
+                  value={kpis.kpis.avg_power_kwh_ton}
+                  unit="kWh/T"
+                  icon={Zap}
+                />
+                <KPICard
+                  dataTestId="kpi-heat"
+                  label="Avg Heat Consumption"
+                  value={kpis.kpis.avg_heat_kcal_kg}
+                  unit="kcal/kg"
+                  icon={TrendingUp}
+                />
+                <KPICard
+                  dataTestId="kpi-fuel-cost"
+                  label="Avg Fuel Cost"
+                  value={kpis.kpis.avg_fuel_cost_ton}
+                  unit="₹/T"
+                  icon={Package}
+                />
+                <KPICard
+                  dataTestId="kpi-afr"
+                  label="Avg AFR"
+                  value={kpis.kpis.avg_afr_pct}
+                  unit="%"
+                  icon={TrendingUp}
+                />
+              </>
+            )}
+            
+            {role === 'Sales' && (
+              <>
+                <KPICard
+                  dataTestId="kpi-dispatch"
+                  label="Total Dispatch"
+                  value={kpis.kpis.total_dispatch_mt}
+                  unit="MT"
+                  icon={Package}
+                />
+                <KPICard
+                  dataTestId="kpi-realization"
+                  label="Avg Realization"
+                  value={kpis.kpis.avg_realization_ton}
+                  unit="₹/T"
+                  icon={TrendingUp}
+                />
+                <KPICard
+                  dataTestId="kpi-freight"
+                  label="Avg Freight Cost"
+                  value={kpis.kpis.avg_freight_ton}
+                  unit="₹/T"
+                  icon={Zap}
+                />
+                <KPICard
+                  dataTestId="kpi-otif"
+                  label="Avg OTIF"
+                  value={kpis.kpis.avg_otif_pct}
+                  unit="%"
+                  icon={Package}
+                />
+              </>
+            )}
           </div>
         )}
 
