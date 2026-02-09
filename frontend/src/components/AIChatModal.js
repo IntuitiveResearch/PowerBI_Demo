@@ -21,6 +21,7 @@ export default function AIChatModal({ open, onClose, contextFilters }) {
         .then(data => setSamplePrompts(data.prompts || []))
         .catch(() => {});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const handleSubmit = async (e) => {
