@@ -343,37 +343,87 @@ async def get_kpis(
         """
         
         comparisons = conn.execute(comparison_query).fetchdf()
-        # Convert NaN to 0
         comparisons = comparisons.fillna(0)
         comparisons = comparisons.to_dict('records')
         
-        # Clean margin trend data
-        margin_trend = margin_trend.fillna(0)
-        
         conn.close()
         
-        # Clean KPI results
+        # Clean KPI results - handle NaN
         for key in kpis_result:
-            if kpis_result[key] is None or (isinstance(kpis_result[key], float) and (kpis_result[key] != kpis_result[key])):  # Check for NaN
+            if kpis_result[key] is None or (isinstance(kpis_result[key], float) and (kpis_result[key] != kpis_result[key])):
                 kpis_result[key] = 0
         
-        return {
+        # Return role-specific KPIs
+        response = {
             'status': 'ok',
-            'kpis': {
+            'role': role,
+            'kpis': {},
+            'series': {'trends': trends.to_dict('records')},
+            'comparisons': comparisons
+        }
+        
+        # Map KPIs based on role
+        if role == "CXO":
+            response['kpis'] = {
                 'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
                 'avg_ebitda_ton': round(kpis_result.get('avg_ebitda_ton', 0) or 0, 2),
+                'avg_cost_ton': round(kpis_result.get('avg_cost_ton', 0) or 0, 2),
+                'avg_margin_pct': round(kpis_result.get('avg_margin_pct', 0) or 0, 2),
                 'avg_power_kwh_ton': round(kpis_result.get('avg_power_kwh_ton', 0) or 0, 2),
                 'avg_clinker_factor': round(kpis_result.get('avg_clinker_factor', 0) or 0, 3),
                 'avg_capacity_util': round(kpis_result.get('avg_capacity_util', 0) or 0, 2),
-                'avg_downtime_hrs': round(kpis_result.get('avg_downtime_hrs', 0) or 0, 2),
+                'avg_realization_ton': round(kpis_result.get('avg_realization_ton', 0) or 0, 2),
+                'avg_freight_ton': round(kpis_result.get('avg_freight_ton', 0) or 0, 2),
                 'avg_otif_pct': round(kpis_result.get('avg_otif_pct', 0) or 0, 2),
+                'avg_afr_pct': round(kpis_result.get('avg_afr_pct', 0) or 0, 2)
+            }
+        elif role == "Plant Head":
+            response['kpis'] = {
+                'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
+                'avg_daily_cement': round(kpis_result.get('avg_daily_cement', 0) or 0, 2),
+                'avg_capacity_util': round(kpis_result.get('avg_capacity_util', 0) or 0, 2),
+                'avg_downtime_hrs': round(kpis_result.get('avg_downtime_hrs', 0) or 0, 2),
+                'avg_blaine': round(kpis_result.get('avg_blaine', 0) or 0, 2),
+                'avg_strength_28d': round(kpis_result.get('avg_strength_28d', 0) or 0, 2),
+                'avg_clinker_factor': round(kpis_result.get('avg_clinker_factor', 0) or 0, 3),
+                'avg_breakdown_hrs': round(kpis_result.get('avg_breakdown_hrs', 0) or 0, 2),
+                'avg_mtbf_hrs': round(kpis_result.get('avg_mtbf_hrs', 0) or 0, 2),
+                'avg_mttr_hrs': round(kpis_result.get('avg_mttr_hrs', 0) or 0, 2)
+            }
+        elif role == "Energy Manager":
+            response['kpis'] = {
+                'avg_power_kwh_ton': round(kpis_result.get('avg_power_kwh_ton', 0) or 0, 2),
+                'avg_heat_kcal_kg': round(kpis_result.get('avg_heat_kcal_kg', 0) or 0, 2),
+                'avg_fuel_cost_ton': round(kpis_result.get('avg_fuel_cost_ton', 0) or 0, 2),
+                'avg_afr_pct': round(kpis_result.get('avg_afr_pct', 0) or 0, 2),
+                'power_variance': round((kpis_result.get('max_power_kwh_ton', 0) or 0) - (kpis_result.get('min_power_kwh_ton', 0) or 0), 2),
+                'heat_variance': round((kpis_result.get('max_heat_kcal_kg', 0) or 0) - (kpis_result.get('min_heat_kcal_kg', 0) or 0), 2),
+                'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
+                'best_power': round(kpis_result.get('min_power_kwh_ton', 0) or 0, 2),
+                'worst_power': round(kpis_result.get('max_power_kwh_ton', 0) or 0, 2)
+            }
+        elif role == "Sales":
+            response['kpis'] = {
+                'total_dispatch_mt': round(kpis_result.get('total_dispatch_mt', 0) or 0, 2),
+                'avg_realization_ton': round(kpis_result.get('avg_realization_ton', 0) or 0, 2),
+                'avg_freight_ton': round(kpis_result.get('avg_freight_ton', 0) or 0, 2),
+                'avg_otif_pct': round(kpis_result.get('avg_otif_pct', 0) or 0, 2),
+                'avg_margin_pct': round(kpis_result.get('avg_margin_pct', 0) or 0, 2),
+                'avg_ebitda_ton': round(kpis_result.get('avg_ebitda_ton', 0) or 0, 2),
+                'price_variance': round((kpis_result.get('max_realization_ton', 0) or 0) - (kpis_result.get('min_realization_ton', 0) or 0), 2),
+                'best_realization': round(kpis_result.get('max_realization_ton', 0) or 0, 2),
+                'worst_realization': round(kpis_result.get('min_realization_ton', 0) or 0, 2)
+            }
+        else:
+            # Default view
+            response['kpis'] = {
+                'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
+                'avg_ebitda_ton': round(kpis_result.get('avg_ebitda_ton', 0) or 0, 2),
+                'avg_power_kwh_ton': round(kpis_result.get('avg_power_kwh_ton', 0) or 0, 2),
                 'avg_margin_pct': round(kpis_result.get('avg_margin_pct', 0) or 0, 2)
-            },
-            'series': {
-                'margin_trend': margin_trend.to_dict('records')
-            },
-            'comparisons': comparisons
-        }
+            }
+        
+        return response
     
     except Exception as e:
         logger.error(f"KPI error: {str(e)}")
