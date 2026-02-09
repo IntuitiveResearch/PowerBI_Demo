@@ -59,11 +59,6 @@ export default function AIChatModal({ open, onClose, contextFilters }) {
     }
   };
 
-  const useSamplePrompt = (prompt) => {
-    setQuestion(prompt);
-    setResult(null);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" data-testid="ai-chat-modal">
