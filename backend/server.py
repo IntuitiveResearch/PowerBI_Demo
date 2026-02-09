@@ -564,13 +564,13 @@ async def get_chart_data(
         # 6. Monthly Financial Trend
         monthly_fin = conn.execute(f"""
             SELECT 
-                strftime('%Y-%m', date) as month,
+                strftime(date, '%Y-%m') as month,
                 AVG(cost_rs_ton) as cost,
                 AVG(ebitda_rs_ton) as ebitda,
                 AVG(margin_pct) as margin
             FROM fact_finance
             WHERE date >= '{start}' AND date <= '{end}' {plant_filter}
-            GROUP BY strftime('%Y-%m', date)
+            GROUP BY strftime(date, '%Y-%m')
             ORDER BY month
         """).fetchdf()
         monthly_fin = monthly_fin.fillna(0)
