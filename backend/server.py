@@ -184,7 +184,7 @@ async def get_kpis(
     try:
         conn = get_db_connection()
         
-        plant_filter = "" if plant == "all" else f"AND plant_name = '{plant}'"
+        plant_filter = "" if plant == "all" else f"AND p.plant_name = '{plant}'"
         
         # Get aggregate KPIs
         query = f"""
