@@ -417,15 +417,24 @@ async def get_kpis(
             }
         elif role == "Energy Manager":
             response['kpis'] = {
+                # Power KPIs
                 'avg_power_kwh_ton': round(kpis_result.get('avg_power_kwh_ton', 0) or 0, 2),
+                'max_power_kwh_ton': round(kpis_result.get('max_power_kwh_ton', 0) or 0, 2),
+                'min_power_kwh_ton': round(kpis_result.get('min_power_kwh_ton', 0) or 0, 2),
+                'power_variance': round((kpis_result.get('max_power_kwh_ton', 0) or 0) - (kpis_result.get('min_power_kwh_ton', 0) or 0), 2),
+                # Thermal KPIs
                 'avg_heat_kcal_kg': round(kpis_result.get('avg_heat_kcal_kg', 0) or 0, 2),
+                'max_heat_kcal_kg': round(kpis_result.get('max_heat_kcal_kg', 0) or 0, 2),
+                'min_heat_kcal_kg': round(kpis_result.get('min_heat_kcal_kg', 0) or 0, 2),
+                'heat_variance': round((kpis_result.get('max_heat_kcal_kg', 0) or 0) - (kpis_result.get('min_heat_kcal_kg', 0) or 0), 2),
+                # Cost & Sustainability KPIs
                 'avg_fuel_cost_ton': round(kpis_result.get('avg_fuel_cost_ton', 0) or 0, 2),
                 'avg_afr_pct': round(kpis_result.get('avg_afr_pct', 0) or 0, 2),
-                'power_variance': round((kpis_result.get('max_power_kwh_ton', 0) or 0) - (kpis_result.get('min_power_kwh_ton', 0) or 0), 2),
-                'heat_variance': round((kpis_result.get('max_heat_kcal_kg', 0) or 0) - (kpis_result.get('min_heat_kcal_kg', 0) or 0), 2),
                 'total_cement_mt': round(kpis_result.get('total_cement_mt', 0) or 0, 2),
+                # Performance KPIs
                 'best_power': round(kpis_result.get('min_power_kwh_ton', 0) or 0, 2),
-                'worst_power': round(kpis_result.get('max_power_kwh_ton', 0) or 0, 2)
+                'worst_power': round(kpis_result.get('max_power_kwh_ton', 0) or 0, 2),
+                'savings_potential': round(((kpis_result.get('avg_power_kwh_ton', 0) or 0) - (kpis_result.get('min_power_kwh_ton', 0) or 0)) * (kpis_result.get('total_cement_mt', 0) or 0) * 5, 2)
             }
         elif role == "Sales":
             response['kpis'] = {
