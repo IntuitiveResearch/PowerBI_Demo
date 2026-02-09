@@ -144,12 +144,19 @@ export default function DashboardPagePowerBI({ user }) {
     );
   }
 
-  // Prepare pie chart data from comparisons
+  // Prepare pie chart data from comparisons with total for percentage calculation
   const pieData = kpis?.comparisons?.map((item, index) => ({
     name: item.plant_name,
     value: item.ebitda_ton || 0,
     color: POWERBI_COLORS.vibrant[index % POWERBI_COLORS.vibrant.length]
   })) || [];
+  
+  // Calculate total for percentage
+  const totalEbitda = pieData.reduce((sum, item) => sum + item.value, 0);
+  const pieDataWithTotal = pieData.map(item => ({
+    ...item,
+    total: totalEbitda
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
