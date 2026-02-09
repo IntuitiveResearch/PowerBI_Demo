@@ -89,7 +89,10 @@ export default function AIChatModal({ open, onClose, contextFilters }) {
                     data-testid={`sample-prompt-${idx}`}
                     variant="outline"
                     size="sm"
-                    onClick={() => useSamplePrompt(prompt)}
+                    onClick={() => {
+                      setQuestion(prompt);
+                      setResult(null);
+                    }}
                     className="w-full justify-start text-left h-auto py-2 px-3"
                   >
                     {prompt}
