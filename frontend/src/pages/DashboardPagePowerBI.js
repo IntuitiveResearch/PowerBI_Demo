@@ -93,7 +93,14 @@ export default function DashboardPagePowerBI({ user }) {
   const [kpis, setKpis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAIChat, setShowAIChat] = useState(false);
+  const [zoomDomain, setZoomDomain] = useState({ startIndex: 0, endIndex: 100 });
   const roleGradients = getRoleGradients(role);
+
+  const handleBrushChange = (domain) => {
+    if (domain && domain.startIndex !== undefined && domain.endIndex !== undefined) {
+      setZoomDomain(domain);
+    }
+  };
 
   const fetchKPIs = async () => {
     setLoading(true);
