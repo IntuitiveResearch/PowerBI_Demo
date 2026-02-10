@@ -22,6 +22,7 @@ export default function PlantComparison({ plants, onClose }) {
 
   useEffect(() => {
     fetchComparisonData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plants]);
 
   const fetchComparisonData = async () => {
