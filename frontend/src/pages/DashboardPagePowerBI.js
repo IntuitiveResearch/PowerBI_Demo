@@ -153,6 +153,7 @@ export default function DashboardPagePowerBI({ user }) {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, plant]);
 
   if (loading) {
